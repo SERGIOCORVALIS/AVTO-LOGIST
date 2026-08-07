@@ -52,12 +52,6 @@ jobs:
       - run: pnpm install
       - run: pnpm --filter @alo/shared build
       - run: pip install -e "services/[dev]"
-      - name: Prepare .env for Compose
-        run: |
-          cp .env.example .env
-          # CI skips proprietary license gate; keep smoke deterministic
-          echo "LICENSE_SKIP=true" >> .env
-          echo "ALLOW_MOCK_RATES=true" >> .env
       - name: Start infra
         run: docker compose -f infra/docker-compose.yml up -d postgres redis
       - name: Wait for postgres
@@ -84,9 +78,8 @@ jobs:
         run: pytest tests/ -q
       - name: Compose config
         run: |
-          docker compose -f infra/docker-compose.yml config >/dev/null
-          docker compose --env-file .env config >/dev/null
-          echo "compose config ok"
+          docker compose -f infra/docker-compose.yml config
+          docker compose config
       - name: Teardown
         if: always()
         run: docker compose -f infra/docker-compose.yml down -v
