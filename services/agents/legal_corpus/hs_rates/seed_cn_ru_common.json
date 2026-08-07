@@ -1,0 +1,67 @@
+{
+  "source_note": "Curated provisional EAEU import duty bands for common CN→RU SKUs. Replace/extend via official EEC/FTS dumps (HS_FEED_URL or hs_rates/*.csv).",
+  "rates": [
+    {
+      "hs_code": "8507.60",
+      "duty_pct": 5.0,
+      "vat_pct": 20.0,
+      "excise_note": "Li-ion accumulators; check battery transport rules",
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "8507.60.00",
+      "duty_pct": 5.0,
+      "vat_pct": 20.0,
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "8517.13",
+      "duty_pct": 0.0,
+      "vat_pct": 20.0,
+      "excise_note": "Smartphones — verify current EEC decision",
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "8471.30",
+      "duty_pct": 0.0,
+      "vat_pct": 20.0,
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "8518.30",
+      "duty_pct": 5.0,
+      "vat_pct": 20.0,
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "6109.10",
+      "duty_pct": 10.0,
+      "vat_pct": 20.0,
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "6203.42",
+      "duty_pct": 10.0,
+      "vat_pct": 20.0,
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "9403.60",
+      "duty_pct": 10.0,
+      "vat_pct": 20.0,
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "9503.00",
+      "duty_pct": 8.0,
+      "vat_pct": 20.0,
+      "source": "seed_eec_band"
+    },
+    {
+      "hs_code": "3304.99",
+      "duty_pct": 6.5,
+      "vat_pct": 20.0,
+      "source": "seed_eec_band"
+    }
+  ]
+}

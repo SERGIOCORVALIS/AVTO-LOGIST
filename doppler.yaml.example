@@ -1,0 +1,4 @@
+# Optional Doppler project config — https://docs.doppler.com
+# After `doppler setup`, secrets sync into apps via scripts/load-secrets.*
+# project: autologistics
+# config: dev

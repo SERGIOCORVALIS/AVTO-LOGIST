@@ -1,0 +1,13 @@
+{
+  "name": "intake_basic",
+  "description": "Client asks for delivery quote with minimal info",
+  "input": {
+    "text": "Нужно привезти 200 powerbank из Гуанчжоу в Москву",
+    "chat_id": 1001
+  },
+  "expect": {
+    "has_replies": true,
+    "status_in": ["intake", "sizing", "customs", "quoting", "pricing", "negotiation", "awaiting_manager"],
+    "no_invented_fixed_price_without_estimate_flag": true
+  }
+}

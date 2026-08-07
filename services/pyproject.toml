@@ -1,0 +1,28 @@
+[project]
+name = "alo-services"
+version = "0.1.0"
+description = "AutoLogistics OS Python services"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "httpx>=0.28.0",
+  "pydantic>=2.10.0",
+  "pydantic-settings>=2.6.0",
+  "openai>=1.58.0",
+  "psycopg[binary,pool]>=3.2.0",
+  "redis>=5.2.0",
+  "python-dotenv>=1.0.1",
+  "tenacity>=9.0.0",
+  "langfuse>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.0", "ruff>=0.8.0"]
+
+[build-system]
+requires = ["setuptools>=75.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["common", "agents", "learning", "orchestrator"]

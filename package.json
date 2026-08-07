@@ -1,0 +1,35 @@
+{
+  "name": "autologistics-os",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AutoLogistics OS — China freight autopilot",
+  "license": "UNLICENSED",
+  "author": "Pankov Sergey Vladimirovich",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "setup": "pwsh -File scripts/setup.ps1",
+    "start": "pwsh -File scripts/start.ps1",
+    "start:gateway": "pwsh -File scripts/start.ps1 -WithGateway",
+    "start:voice": "pwsh -File scripts/start.ps1 -WithVoiceGateway",
+    "dev:voice": "pnpm --filter @alo/voice-gateway dev",
+    "stop": "pwsh -File scripts/stop.ps1",
+    "secrets": "pwsh -File scripts/load-secrets.ps1",
+    "docker:up": "docker compose --env-file .env up -d --build",
+    "docker:rebuild": "pwsh -File scripts/docker-rebuild.ps1",
+    "docker:rebuild:nocache": "pwsh -File scripts/docker-rebuild.ps1 -NoCache",
+    "docker:infra": "docker compose -f infra/docker-compose.yml up -d",
+    "docker:down": "pwsh -File scripts/stop.ps1 -DockerOnly",
+    "build": "pnpm -r run build",
+    "dev:api": "pnpm --filter @alo/api dev",
+    "dev:gateway": "pnpm --filter @alo/tg-gateway dev",
+    "dev:workers": "pnpm --filter @alo/workers-ts dev",
+    "typecheck": "pnpm -r run typecheck",
+    "license:issue": "node scripts/issue-license.mjs",
+    "db:migrate": "pnpm --filter @alo/api db:migrate",
+    "test:py": "cd services && .venv/Scripts/python -m pytest tests/test_agents.py -q",
+    "logs:tail": "pwsh -Command \"Get-Content .\\logs\\audit\\current.log -Wait -Tail 40\""
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

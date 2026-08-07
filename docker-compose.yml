@@ -1,0 +1,118 @@
+# AutoLogistics OS — full stack (infra + app services)
+# Usage:
+#   docker compose --env-file .env up -d --build
+#   docker compose --env-file .env up -d --build --force-recreate
+#   docker compose --profile observability up -d
+#
+# Dev without containerized apps: use scripts/start.ps1 (infra only via infra/docker-compose.yml)
+
+name: autologistics
+
+include:
+  - path: infra/docker-compose.yml
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://alo:alo@postgres:5432/autologistics
+      REDIS_URL: redis://redis:6379
+      ORCHESTRATOR_URL: http://orchestrator:8000
+      API_HOST: 0.0.0.0
+      API_PORT: 3000
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      orchestrator:
+        condition: service_started
+    restart: unless-stopped
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://alo:alo@postgres:5432/autologistics
+      REDIS_URL: redis://redis:6379
+      API_URL: http://api:3000
+      PROMPTS_DIR: /app/packages/prompts
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./packages/prompts:/app/packages/prompts:ro
+    restart: unless-stopped
+
+  workers:
+    build:
+      context: .
+      dockerfile: apps/workers-ts/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://alo:alo@postgres:5432/autologistics
+      REDIS_URL: redis://redis:6379
+      API_URL: http://api:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  voice-gateway:
+    build:
+      context: .
+      dockerfile: apps/voice-gateway/Dockerfile
+    env_file: .env
+    ports:
+      - "${VOICE_GATEWAY_PORT:-3010}:3010"
+      - "${SIP_PORT:-5060}:5060/udp"
+      # Keep RTP publish range tight for Docker Desktop; widen via .env on bare metal
+      - "${SIP_RTP_PORT_MIN:-10000}-${SIP_RTP_PORT_MAX:-10200}:${SIP_RTP_PORT_MIN:-10000}-${SIP_RTP_PORT_MAX:-10200}/udp"
+    environment:
+      DATABASE_URL: postgresql://alo:alo@postgres:5432/autologistics
+      REDIS_URL: redis://redis:6379
+      API_URL: http://api:3000
+      ORCHESTRATOR_URL: http://orchestrator:8000
+      VOICE_GATEWAY_HOST: 0.0.0.0
+      VOICE_GATEWAY_PORT: 3010
+      SIP_RTP_PORT_MIN: ${SIP_RTP_PORT_MIN:-10000}
+      SIP_RTP_PORT_MAX: ${SIP_RTP_PORT_MAX:-10200}
+      PROMPTS_DIR: /app/packages/prompts
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+      orchestrator:
+        condition: service_started
+    volumes:
+      - ./packages/prompts:/app/packages/prompts:ro
+    restart: unless-stopped
+
+  # tg-gateway needs interactive session secrets; run via scripts/start locally by default.
+  # Uncomment to run in Docker when TG_* are set in .env
+  # gateway:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/tg-gateway/Dockerfile
+  #   env_file: .env
+  #   environment:
+  #     REDIS_URL: redis://redis:6379
+  #     API_URL: http://api:3000
+  #   depends_on:
+  #     - api
+  #     - redis
+  #   restart: unless-stopped

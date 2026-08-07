@@ -1,0 +1,12 @@
+{
+  "base_per_kg": 390,
+  "currency": "RUB",
+  "eta": [10, 15],
+  "fees": ["terminal 2000"],
+  "reliability": 0.74,
+  "contact_email": "",
+  "tiers": [
+    { "min_kg": 100, "per_kg": 360 },
+    { "min_kg": 500, "per_kg": 320 }
+  ]
+}

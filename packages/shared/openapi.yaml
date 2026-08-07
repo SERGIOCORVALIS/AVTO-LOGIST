@@ -1,0 +1,90 @@
+openapi: 3.1.0
+info:
+  title: AutoLogistics OS API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /deals:
+    get:
+      summary: List deals
+      responses:
+        "200":
+          description: Deal list
+    post:
+      summary: Create deal
+      responses:
+        "201":
+          description: Created
+  /deals/{id}:
+    get:
+      summary: Get deal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Deal card
+    patch:
+      summary: Update deal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Updated
+  /deals/{id}/escalate:
+    post:
+      summary: Escalate deal to manager
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "201":
+          description: Escalation created
+  /escalations/{id}/decide:
+    post:
+      summary: Approve or reject escalation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Decision applied
+  /policy:
+    get:
+      summary: Get policy config
+      responses:
+        "200":
+          description: Policy
+    put:
+      summary: Update policy keys
+      responses:
+        "200":
+          description: Updated
+  /orchestrator/process:
+    post:
+      summary: Process inbound message via orchestrator
+      responses:
+        "200":
+          description: Orchestrator result

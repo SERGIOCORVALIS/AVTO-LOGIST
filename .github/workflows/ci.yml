@@ -1,0 +1,85 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install
+      - run: pnpm --filter @alo/shared build
+      - run: pnpm -r run typecheck
+
+  python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: pytest tests/ -q
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    needs: [node, python]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pnpm install
+      - run: pnpm --filter @alo/shared build
+      - run: pip install -e "services/[dev]"
+      - name: Start infra
+        run: docker compose -f infra/docker-compose.yml up -d postgres redis
+      - name: Wait for postgres
+        run: |
+          for i in $(seq 1 30); do
+            docker compose -f infra/docker-compose.yml exec -T postgres pg_isready -U alo -d autologistics && exit 0
+            sleep 2
+          done
+          exit 1
+      - name: Apply HS migration
+        run: docker compose -f infra/docker-compose.yml exec -T postgres psql -U alo -d autologistics -f /docker-entrypoint-initdb.d/init.sql || true
+      - name: Migrate hs_duty_rates
+        run: |
+          docker compose -f infra/docker-compose.yml exec -T postgres \
+            psql -U alo -d autologistics < infra/migrations/001_hs_duty_rates.sql
+      - name: API health smoke
+        run: |
+          pnpm --filter @alo/api exec tsx -e "console.log('api-ok')"
+      - name: Pytest with DB
+        working-directory: services
+        env:
+          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+          ALLOW_MOCK_RATES: "true"
+        run: pytest tests/ -q
+      - name: Compose config
+        run: |
+          docker compose -f infra/docker-compose.yml config
+          docker compose config
+      - name: Teardown
+        if: always()
+        run: docker compose -f infra/docker-compose.yml down -v
