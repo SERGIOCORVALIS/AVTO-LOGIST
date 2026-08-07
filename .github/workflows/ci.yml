@@ -52,6 +52,24 @@ jobs:
       - run: pnpm install
       - run: pnpm --filter @alo/shared build
       - run: pip install -e "services/[dev]"
+      # Linux FS is case-sensitive: Compose wants lowercase `.env`.
+      # Repo may ship `.ENV` (Windows); normalize before compose.
+      - name: Ensure lowercase .env for Compose
+        run: |
+          if [ -f .env ]; then
+            echo "found .env"
+          elif [ -f .ENV ]; then
+            cp .ENV .env
+            echo "copied .ENV -> .env"
+          elif [ -f .env.example ]; then
+            cp .env.example .env
+            echo "copied .env.example -> .env"
+          else
+            echo "No .env / .ENV / .env.example found" >&2
+            exit 1
+          fi
+          echo "LICENSE_SKIP=true" >> .env
+          echo "ALLOW_MOCK_RATES=true" >> .env
       - name: Start infra
         run: docker compose -f infra/docker-compose.yml up -d postgres redis
       - name: Wait for postgres
@@ -78,8 +96,9 @@ jobs:
         run: pytest tests/ -q
       - name: Compose config
         run: |
-          docker compose -f infra/docker-compose.yml config
-          docker compose config
+          docker compose -f infra/docker-compose.yml config >/dev/null
+          docker compose --env-file .env config >/dev/null
+          echo "compose config ok"
       - name: Teardown
         if: always()
         run: docker compose -f infra/docker-compose.yml down -v
