@@ -2,26 +2,30 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any
 
 import httpx
 
 from common.db import db, upsert_embedding
+from common.llm import embedding_model, openai_timeout_sec
+from common.proxy import httpx_proxy_kwargs
 
 
 def embed_text(text: str) -> list[float] | None:
-    key = os.getenv("OPENAI_API_KEY") or ""
+    from common import settings
+
+    key = (settings.openai_api_key or "").strip()
     if not key or not text.strip():
         return None
-    model = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
-    base = (os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1").rstrip("/")
+    model = embedding_model()
+    base = (settings.openai_base_url or "https://api.openai.com/v1").rstrip("/")
     try:
         r = httpx.post(
             f"{base}/embeddings",
             headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
             json={"model": model, "input": text[:8000]},
-            timeout=30.0,
+            timeout=openai_timeout_sec(),
+            **httpx_proxy_kwargs(),
         )
         r.raise_for_status()
         return list(r.json()["data"][0]["embedding"])

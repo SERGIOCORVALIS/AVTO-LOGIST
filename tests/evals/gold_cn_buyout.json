@@ -1,0 +1,12 @@
+{
+  "name": "cn_exw_dap_buyout",
+  "description": "China import EXW-DAP with buyout service",
+  "input": {
+    "text": "Импорт из Китая: выкуп на 1688 и доставка сборкой EXW Гуанчжоу DAP Москва, 120 кг электроники, инвойс 8000 USD",
+    "chat_id": 1102
+  },
+  "expect": {
+    "has_replies": true,
+    "status_in": ["intake", "sizing", "customs", "quoting", "pricing", "negotiation", "awaiting_manager"]
+  }
+}

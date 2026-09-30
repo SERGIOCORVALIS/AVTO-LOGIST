@@ -1,16 +1,9 @@
-<pre>
-╔══════════════════════════════════════════════════╗
-║  🔋 BATTERY / LITHIUM · AI CONTEXT NOTES         ║
-╚══════════════════════════════════════════════════╝
-</pre>
+# Battery / lithium cargo notes (summary for AI context)
 
-# 🔋 Battery / lithium cargo notes (AI context)
+При перевозке Li-ion / powerbank:
+- Возможны ограничения авиаперевозок (IATA PI965/PI966/PI967 — уточнять у авиалинии).
+- Может потребоваться декларация опасного груза / MSDS.
+- Для РФ/ЕАЭС — проверка необходимости сертификации / маркировки.
+- Uncertainty классификации ТН ВЭД высокая без точной ёмкости (Wh) и комплектации.
 
-When shipping Li-ion / powerbanks:
-
-- Air carriage limits may apply (IATA PI965 / PI966 / PI967 — confirm with airline).
-- Dangerous goods declaration / MSDS may be required.
-- For RF / EAEU — check certification / marking obligations.
-- HS uncertainty is high without exact capacity (Wh) and kit composition.
-
-Always raise `must_approve` when `battery=true`.
+Всегда повышай must_approve при battery=true.

@@ -26,13 +26,14 @@ if (-not (Test-Path ".env")) {
   Copy-Item ".env.example" ".env"
   Write-Host "Created .env"
 }
-# Dot-source key=value into session (simple parser)
+# Dot-source key=value into session (project .env wins over pre-set vars)
 Get-Content ".env" | ForEach-Object {
   if ($_ -match '^\s*#' -or $_ -notmatch '=') { return }
   $i = $_.IndexOf('=')
   $k = $_.Substring(0, $i).Trim()
   $v = $_.Substring($i + 1).Trim().Trim('"').Trim("'")
-  if ($k -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable($k))) { return }
-  Set-Item -Path "Env:$k" -Value $v
+  $hash = $v.IndexOf(" #")
+  if ($hash -ge 0) { $v = $v.Substring(0, $hash).Trim() }
+  if ($k) { Set-Item -Path "Env:$k" -Value $v }
 }
-Write-Host ".env applied to session (existing env vars not overwritten)."
+Write-Host ".env applied to session."

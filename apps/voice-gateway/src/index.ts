@@ -1,4 +1,5 @@
-import "dotenv/config";
+import { QUEUES, createLogger, ensureLogTree, enforceLicense, loadRootEnv } from "@alo/shared";
+loadRootEnv();
 try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require("../../../scripts/load-secrets.cjs");
@@ -10,25 +11,12 @@ import Fastify from "fastify";
 import { Pool } from "pg";
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
-import {
-  QUEUES,
-  assertLicenseOrExit,
-  createLogger,
-  ensureLogTree,
-} from "@alo/shared";
 import { SessionManager } from "./sessions";
 import { startSipTrunk, type SipTrunk } from "./sip/trunk";
 import { registerSipHttpRoutes } from "./sip/routes";
 
 const log = createLogger("voice-gateway");
 ensureLogTree();
-
-const license = assertLicenseOrExit("voice-gateway");
-log.info("license", {
-  mode: license.mode,
-  daysLeft: license.daysLeft,
-  periodEndsAt: license.periodEndsAt,
-});
 
 const pool = new Pool({
   connectionString:
@@ -43,6 +31,10 @@ const redis = new IORedis(redisUrl, { maxRetriesPerRequest: null });
 const channelQueue = new Queue(QUEUES.channel, { connection: redis });
 
 async function main() {
+  await enforceLicense({
+    service: "voice-gateway",
+    allowPrompt: Boolean(process.stdin.isTTY),
+  });
   let trunk: SipTrunk | null = null;
 
   const app = Fastify({ logger: false });
@@ -59,7 +51,10 @@ async function main() {
           outboundProxy: trunk.cfg.outboundProxy || null,
           port: trunk.cfg.port,
           publicHost: trunk.cfg.publicHost,
-          uriMode: trunk.cfg.uriMode,
+          transport: trunk.cfg.transport,
+          registered: trunk.registrar?.registered ?? false,
+          registerStatus: trunk.registrar?.lastStatus ?? null,
+          registerReason: trunk.registrar?.lastReason || null,
           stats: trunk.stack.getStats(),
         }
       : { active: false, providers: ["zadarma", "beeline"] },

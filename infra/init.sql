@@ -32,7 +32,40 @@ INSERT INTO policy_config (key, value) VALUES
   ('first_reply_sla_sec', '120'),
   ('quote_sla_hours', '2'),
   ('learning_enabled', 'true'),
-  ('canary_pct', '10')
+  ('canary_pct', '10'),
+  ('min_gross_profit_rub', '3000'),
+  ('ru_vat_pct', '22'),
+  ('client_ru_sells_with_vat', 'true'),
+  ('intl_freight_vat_pct', '0'),
+  ('broker_cost_rub', '15000'),
+  ('broker_client_price_rub', '20000'),
+  ('certification_markup_pct', '5'),
+  ('buyout_commission_pct', '5'),
+  ('buyout_fx_markup_rub', '0.45'),
+  ('prepay_preferred_pct', '100'),
+  ('prepay_min_pct_under_1m', '50'),
+  ('staged_payment_threshold_rub', '1000000'),
+  ('rfq_target_min', '10'),
+  ('rfq_target_max', '20'),
+  ('importer_scheme', '"manual"'),
+  ('customs_confirmed_autonomy_threshold', '500'),
+  ('followup_default_hours', '[24, 72, 168]'),
+  ('followup_urgent_hours', '2'),
+  ('shipment_urgent_days', '14'),
+  ('vip_volume_min', '5'),
+  ('vip_volume_max', '50'),
+  ('long_route_compare_km', '2100'),
+  ('night_express_enabled', 'true'),
+  ('academy_enabled', 'true'),
+  ('academy_in_kp', 'true'),
+  ('academy_in_rfq', 'true'),
+  ('academy_in_prompts', 'true'),
+  ('academy_in_voice', 'true'),
+  ('comm_tone', '"commercial"'),
+  ('always_ask_client', '["weight_kg","ready_date"]'),
+  ('client_do_not_say', '["внутренние ставки поставщиков","маржа","себестоимость RFQ"]'),
+  ('staff_coaching_rules', '["Один уточняющий вопрос за раз","Не выдумывать ставки","Клиенту — только белые схемы"]'),
+  ('staff_coach_ttl_days', '30')
 ON CONFLICT (key) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS deals (
@@ -282,6 +315,335 @@ CREATE TABLE IF NOT EXISTS dead_letter_jobs (
   payload JSONB NOT NULL,
   error TEXT,
   attempts INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS staff_users (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('director', 'manager')),
+  name TEXT NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  last_login_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_staff_users_role ON staff_users(role) WHERE active = TRUE;
+
+CREATE TABLE IF NOT EXISTS staff_events (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  actor_id UUID,
+  actor_email TEXT,
+  actor_role TEXT,
+  action TEXT NOT NULL,
+  target_id UUID,
+  target_email TEXT,
+  summary TEXT NOT NULL,
+  meta JSONB NOT NULL DEFAULT '{}',
+  ip TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_staff_events_created ON staff_events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_staff_events_actor ON staff_events(actor_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS clients (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  channel TEXT,
+  tg_chat_id BIGINT,
+  phone TEXT,
+  name TEXT,
+  legal_name TEXT,
+  inn TEXT,
+  primary_email TEXT,
+  abc JSONB NOT NULL DEFAULT '{}',
+  vip BOOLEAN NOT NULL DEFAULT FALSE,
+  personal_context JSONB NOT NULL DEFAULT '{}',
+  preferred_comm TEXT,
+  payment_discipline TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_clients_tg ON clients(tg_chat_id);
+CREATE INDEX IF NOT EXISTS idx_clients_phone ON clients(phone);
+CREATE INDEX IF NOT EXISTS idx_clients_primary_email ON clients (lower(primary_email));
+
+CREATE TABLE IF NOT EXISTS client_identities (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL CHECK (kind IN ('email', 'phone', 'tg_chat_id', 'inn')),
+  value TEXT NOT NULL,
+  value_norm TEXT NOT NULL,
+  source TEXT,
+  confidence NUMERIC(4,3) NOT NULL DEFAULT 1.0,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (kind, value_norm)
+);
+CREATE INDEX IF NOT EXISTS idx_client_identities_client ON client_identities(client_id);
+CREATE INDEX IF NOT EXISTS idx_client_identities_value ON client_identities(value_norm);
+
+CREATE TABLE IF NOT EXISTS mail_threads (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  thread_key TEXT NOT NULL UNIQUE,
+  subject_norm TEXT,
+  client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
+  first_at TIMESTAMPTZ,
+  last_at TIMESTAMPTZ,
+  message_count INT NOT NULL DEFAULT 0,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_mail_threads_client ON mail_threads(client_id);
+
+CREATE TABLE IF NOT EXISTS mail_messages (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  mailbox_id TEXT NOT NULL,
+  folder TEXT NOT NULL DEFAULT 'INBOX',
+  uid BIGINT,
+  message_id TEXT,
+  in_reply_to TEXT,
+  references_hdr TEXT,
+  thread_id UUID REFERENCES mail_threads(id) ON DELETE SET NULL,
+  thread_key TEXT,
+  from_raw TEXT,
+  from_email TEXT,
+  to_emails TEXT[] NOT NULL DEFAULT '{}',
+  cc_emails TEXT[] NOT NULL DEFAULT '{}',
+  subject TEXT,
+  sent_at TIMESTAMPTZ,
+  body_text TEXT,
+  raw_path TEXT,
+  role TEXT NOT NULL DEFAULT 'other'
+    CHECK (role IN ('client', 'supplier', 'service_provider', 'internal', 'other', 'newsletter')),
+  client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
+  direction TEXT CHECK (direction IS NULL OR direction IN ('inbound', 'outbound')),
+  content_hash TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (mailbox_id, folder, uid),
+  UNIQUE (message_id)
+);
+CREATE INDEX IF NOT EXISTS idx_mail_messages_client ON mail_messages(client_id);
+CREATE INDEX IF NOT EXISTS idx_mail_messages_from ON mail_messages(lower(from_email));
+CREATE INDEX IF NOT EXISTS idx_mail_messages_thread ON mail_messages(thread_id);
+CREATE INDEX IF NOT EXISTS idx_mail_messages_role ON mail_messages(role);
+CREATE INDEX IF NOT EXISTS idx_mail_messages_sent ON mail_messages(sent_at DESC);
+CREATE INDEX IF NOT EXISTS idx_mail_messages_content_hash ON mail_messages(content_hash);
+
+CREATE TABLE IF NOT EXISTS mail_attachments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  mail_message_id UUID REFERENCES mail_messages(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
+  filename TEXT NOT NULL,
+  content_type TEXT,
+  bytes INT,
+  sha256 TEXT NOT NULL UNIQUE,
+  storage_key TEXT NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'other'
+    CHECK (kind IN ('kp', 'contracts', 'invoices', 'payments', 'customs', 'client', 'other')),
+  metadata JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_mail_attachments_message ON mail_attachments(mail_message_id);
+CREATE INDEX IF NOT EXISTS idx_mail_attachments_client ON mail_attachments(client_id);
+
+CREATE TABLE IF NOT EXISTS service_providers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  category TEXT NOT NULL
+    CHECK (category IN ('post', 'fuel', 'glonass', 'tracking', 'telecom', 'bank', 'it_saas', 'other_service')),
+  primary_email TEXT UNIQUE,
+  domains TEXT[] NOT NULL DEFAULT '{}',
+  message_count INT NOT NULL DEFAULT 0,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_service_providers_category ON service_providers(category);
+
+CREATE TABLE IF NOT EXISTS newsletter_purge_log (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  message_id TEXT,
+  from_email TEXT,
+  subject TEXT,
+  reason TEXT NOT NULL,
+  mailbox_id TEXT,
+  raw_path TEXT,
+  purged_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  metadata JSONB NOT NULL DEFAULT '{}'
+);
+
+CREATE TABLE IF NOT EXISTS client_calc_requests (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  source_message_id UUID REFERENCES mail_messages(id) ON DELETE SET NULL,
+  thread_id UUID REFERENCES mail_threads(id) ON DELETE SET NULL,
+  origin TEXT,
+  destination TEXT,
+  mode TEXT,
+  cargo_desc TEXT,
+  ready_date TEXT,
+  amount NUMERIC(14,2),
+  currency TEXT,
+  requested_at TIMESTAMPTZ,
+  raw JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_client_calc_client ON client_calc_requests(client_id);
+CREATE INDEX IF NOT EXISTS idx_client_calc_mode ON client_calc_requests(mode);
+CREATE INDEX IF NOT EXISTS idx_client_calc_requested ON client_calc_requests(requested_at DESC);
+
+CREATE TABLE IF NOT EXISTS client_facts (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  fact_type TEXT NOT NULL,
+  value TEXT NOT NULL,
+  source_message_id UUID REFERENCES mail_messages(id) ON DELETE SET NULL,
+  confidence NUMERIC(4,3) NOT NULL DEFAULT 0.7,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_client_facts_client ON client_facts(client_id);
+CREATE INDEX IF NOT EXISTS idx_client_facts_type ON client_facts(fact_type);
+
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS client_id UUID REFERENCES clients(id) ON DELETE SET NULL;
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS calculation_assumptions JSONB NOT NULL DEFAULT '[]';
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS quote_fidelity TEXT;
+
+CREATE TABLE IF NOT EXISTS suppliers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  partner_id UUID REFERENCES partners(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  code TEXT UNIQUE,
+  inn TEXT,
+  modes TEXT[] NOT NULL DEFAULT '{}',
+  corridors TEXT[] NOT NULL DEFAULT '{}',
+  strong_lanes JSONB NOT NULL DEFAULT '[]',
+  payment_terms JSONB NOT NULL DEFAULT '{}',
+  contacts JSONB NOT NULL DEFAULT '{}',
+  verification JSONB NOT NULL DEFAULT '{}',
+  performance JSONB NOT NULL DEFAULT '{}',
+  fraud_watch BOOLEAN NOT NULL DEFAULT FALSE,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  left_market BOOLEAN NOT NULL DEFAULT FALSE,
+  silent BOOLEAN NOT NULL DEFAULT FALSE,
+  silent_at TIMESTAMPTZ,
+  silent_note TEXT,
+  last_rfq_at TIMESTAMPTZ,
+  last_reply_at TIMESTAMPTZ,
+  no_reply_streak INT NOT NULL DEFAULT 0,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_suppliers_active ON suppliers(active) WHERE active AND NOT left_market;
+CREATE INDEX IF NOT EXISTS idx_suppliers_modes ON suppliers USING GIN (modes);
+CREATE INDEX IF NOT EXISTS idx_suppliers_silent
+  ON suppliers(silent) WHERE silent AND active AND NOT left_market;
+
+ALTER TABLE partners ADD COLUMN IF NOT EXISTS modes TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE partners ADD COLUMN IF NOT EXISTS inn TEXT;
+ALTER TABLE partners ADD COLUMN IF NOT EXISTS vat_mode TEXT;
+ALTER TABLE partners ADD COLUMN IF NOT EXISTS verification JSONB NOT NULL DEFAULT '{}';
+ALTER TABLE partners ADD COLUMN IF NOT EXISTS performance JSONB NOT NULL DEFAULT '{}';
+
+ALTER TABLE quotes ADD COLUMN IF NOT EXISTS supplier_id UUID REFERENCES suppliers(id) ON DELETE SET NULL;
+ALTER TABLE quotes ADD COLUMN IF NOT EXISTS raw_supplier_quote NUMERIC(14,2);
+ALTER TABLE quotes ADD COLUMN IF NOT EXISTS supplier_vat_mode TEXT;
+ALTER TABLE quotes ADD COLUMN IF NOT EXISTS effective_supplier_cost NUMERIC(14,2);
+ALTER TABLE quotes ADD COLUMN IF NOT EXISTS is_benchmark BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE quotes ADD COLUMN IF NOT EXISTS transport_mode TEXT;
+
+CREATE TABLE IF NOT EXISTS rate_benchmarks (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  lane TEXT NOT NULL,
+  transport_mode TEXT,
+  unit TEXT NOT NULL DEFAULT 'rub',
+  value NUMERIC(14,4) NOT NULL,
+  currency TEXT NOT NULL DEFAULT 'RUB',
+  captured_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  source TEXT,
+  deal_id UUID REFERENCES deals(id) ON DELETE SET NULL,
+  notes TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'
+);
+
+CREATE TABLE IF NOT EXISTS cashflow_plans (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  deal_id UUID NOT NULL REFERENCES deals(id) ON DELETE CASCADE,
+  amount_rub NUMERIC(14,2) NOT NULL,
+  client_prepay_pct NUMERIC(6,2),
+  supplier_prepay_pct NUMERIC(6,2),
+  gap BOOLEAN NOT NULL DEFAULT FALSE,
+  stages JSONB NOT NULL DEFAULT '[]',
+  notes JSONB NOT NULL DEFAULT '[]',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS execution_playbooks (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  deal_id UUID NOT NULL REFERENCES deals(id) ON DELETE CASCADE,
+  author TEXT,
+  body JSONB NOT NULL DEFAULT '{}',
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS follow_ups (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  deal_id UUID NOT NULL REFERENCES deals(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL,
+  due_at TIMESTAMPTZ NOT NULL,
+  done BOOLEAN NOT NULL DEFAULT FALSE,
+  payload JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS supplier_questions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  deal_id UUID NOT NULL REFERENCES deals(id) ON DELETE CASCADE,
+  supplier_id UUID REFERENCES suppliers(id) ON DELETE SET NULL,
+  question TEXT NOT NULL,
+  card_answer TEXT,
+  client_answer TEXT,
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  resolved_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS volume_lanes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  lane TEXT NOT NULL,
+  transport_mode TEXT,
+  period_month DATE NOT NULL,
+  won_qty NUMERIC(12,3) NOT NULL DEFAULT 0,
+  potential_qty NUMERIC(12,3) NOT NULL DEFAULT 0,
+  lost_on_price INT NOT NULL DEFAULT 0,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(lane, transport_mode, period_month)
+);
+
+CREATE TABLE IF NOT EXISTS director_reports (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  kind TEXT NOT NULL,
+  title TEXT NOT NULL,
+  body JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS hs_broker_feedback (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  deal_id UUID REFERENCES deals(id) ON DELETE SET NULL,
+  ai_hs TEXT,
+  broker_hs TEXT,
+  match BOOLEAN,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

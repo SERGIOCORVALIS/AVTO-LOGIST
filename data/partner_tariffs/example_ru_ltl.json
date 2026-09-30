@@ -1,0 +1,14 @@
+{
+  "corridor": "ru_domestic",
+  "modes": ["ltl_groupage"],
+  "base_per_kg": 18,
+  "currency": "RUB",
+  "eta": [3, 7],
+  "fees": ["terminal 1500"],
+  "reliability": 0.7,
+  "contact_email": "",
+  "tiers": [
+    { "min_kg": 100, "per_kg": 15 },
+    { "min_kg": 500, "per_kg": 12 }
+  ]
+}

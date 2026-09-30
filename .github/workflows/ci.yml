@@ -20,6 +20,14 @@ jobs:
       - run: pnpm install
       - run: pnpm --filter @alo/shared build
       - run: pnpm -r run typecheck
+      - name: Unit tests (shared, api, tg-gateway, voice-gateway, workers, web)
+        run: |
+          pnpm --filter @alo/shared test
+          pnpm --filter @alo/api test
+          pnpm --filter @alo/tg-gateway test
+          pnpm --filter @alo/voice-gateway test
+          pnpm --filter @alo/workers-ts test
+          pnpm --filter @alo/web test
 
   python:
     runs-on: ubuntu-latest
@@ -32,6 +40,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev]"
+      - run: ruff check .
       - run: pytest tests/ -q
 
   e2e-smoke:
@@ -52,24 +61,6 @@ jobs:
       - run: pnpm install
       - run: pnpm --filter @alo/shared build
       - run: pip install -e "services/[dev]"
-      # Linux FS is case-sensitive: Compose wants lowercase `.env`.
-      # Repo may ship `.ENV` (Windows); normalize before compose.
-      - name: Ensure lowercase .env for Compose
-        run: |
-          if [ -f .env ]; then
-            echo "found .env"
-          elif [ -f .ENV ]; then
-            cp .ENV .env
-            echo "copied .ENV -> .env"
-          elif [ -f .env.example ]; then
-            cp .env.example .env
-            echo "copied .env.example -> .env"
-          else
-            echo "No .env / .ENV / .env.example found" >&2
-            exit 1
-          fi
-          echo "LICENSE_SKIP=true" >> .env
-          echo "ALLOW_MOCK_RATES=true" >> .env
       - name: Start infra
         run: docker compose -f infra/docker-compose.yml up -d postgres redis
       - name: Wait for postgres
@@ -79,26 +70,87 @@ jobs:
             sleep 2
           done
           exit 1
-      - name: Apply HS migration
-        run: docker compose -f infra/docker-compose.yml exec -T postgres psql -U alo -d autologistics -f /docker-entrypoint-initdb.d/init.sql || true
-      - name: Migrate hs_duty_rates
+      - name: Apply init schema (fresh volume)
         run: |
           docker compose -f infra/docker-compose.yml exec -T postgres \
-            psql -U alo -d autologistics < infra/migrations/001_hs_duty_rates.sql
+            psql -U alo -d autologistics -c "SELECT 1" >/dev/null
+      - name: Run SQL migrations 001–013
+        env:
+          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+        run: pnpm --filter @alo/api db:migrate
+      - name: API DB integration tests
+        env:
+          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: ci-smoke-jwt-secret-not-for-prod
+          INTERNAL_API_TOKEN: ci-smoke-internal-token-32b
+          CABINET_AUTH_REQUIRED: "true"
+          ALO_ENV: development
+        run: pnpm --filter @alo/api test:db
       - name: API health smoke
+        env:
+          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+          REDIS_URL: redis://localhost:6379
+          ALO_ENV: development
+          ALLOW_FILE_TARIFFS: "true"
+          ALLOW_MOCK_RATES: "false"
+          JWT_SECRET: ci-smoke-jwt-secret-not-for-prod
+          INTERNAL_API_TOKEN: ci-smoke-internal-token-32b
+          CABINET_AUTH_REQUIRED: "true"
         run: |
-          pnpm --filter @alo/api exec tsx -e "console.log('api-ok')"
+          pnpm --filter @alo/api exec tsx -e "
+          import { loadRootEnv } from '@alo/shared';
+          loadRootEnv();
+          process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://alo:alo@localhost:5432/autologistics';
+          process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+          const { pool } = await import('./src/db.ts');
+          await pool.query('SELECT 1');
+          const IORedis = (await import('ioredis')).default;
+          const r = new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: 1, lazyConnect: true });
+          await r.connect();
+          const pong = await r.ping();
+          r.disconnect();
+          await pool.end();
+          if (pong !== 'PONG') throw new Error('redis ping failed');
+          console.log('api-deps-ok');
+          "
       - name: Pytest with DB
         working-directory: services
         env:
           DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
           ALLOW_MOCK_RATES: "true"
+          ALLOW_FILE_TARIFFS: "true"
         run: pytest tests/ -q
+      - name: Start API and orchestrator for RFQ e2e
+        env:
+          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: ci-smoke-jwt-secret-not-for-prod
+          INTERNAL_API_TOKEN: ci-smoke-internal-token-32b
+          CABINET_AUTH_REQUIRED: "true"
+          ALO_ENV: development
+          ALLOW_MOCK_RATES: "true"
+          ALLOW_FILE_TARIFFS: "true"
+          API_URL: http://127.0.0.1:3000
+          ORCHESTRATOR_URL: http://127.0.0.1:8000
+          OPENAI_API_KEY: sk-ci-placeholder-not-used-with-mock
+        run: |
+          pnpm --filter @alo/api exec tsx src/index.ts &
+          cd services && uvicorn orchestrator.app:app --host 127.0.0.1 --port 8000 &
+          for i in $(seq 1 45); do
+            curl -sf http://127.0.0.1:3000/health >/dev/null && curl -sf http://127.0.0.1:8000/health >/dev/null && exit 0
+            sleep 2
+          done
+          echo "services failed to become healthy"
+          exit 1
+      - name: E2E RFQ smoke
+        env:
+          ORCHESTRATOR_URL: http://127.0.0.1:8000
+        run: node scripts/ci-e2e-rfq.mjs
       - name: Compose config
         run: |
-          docker compose -f infra/docker-compose.yml config >/dev/null
-          docker compose --env-file .env config >/dev/null
-          echo "compose config ok"
+          docker compose -f infra/docker-compose.yml config
+          docker compose config
       - name: Teardown
         if: always()
         run: docker compose -f infra/docker-compose.yml down -v

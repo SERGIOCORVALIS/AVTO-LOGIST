@@ -1,4 +1,6 @@
 {
+  "corridor": "cn_import",
+  "modes": ["air", "ltl_groupage"],
   "base_per_kg": 390,
   "currency": "RUB",
   "eta": [10, 15],

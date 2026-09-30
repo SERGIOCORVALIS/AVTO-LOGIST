@@ -16,6 +16,9 @@ export class SipRegistrar {
   private cseq = 1;
   private callId = `reg-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   private authCtx: DigestCtx = {};
+  registered = false;
+  lastStatus: number | null = null;
+  lastReason = "";
 
   constructor(
     private stack: SipStack,
@@ -61,14 +64,25 @@ export class SipRegistrar {
       "user-agent": `alo-voice-gateway/${this.cfg.provider}`,
     };
 
-    // Beeline (and some trunks) require routing via outbound proxy
+    // Beeline (and some trunks) require routing via outbound proxy.
+    // Pass a parsed URI so `;lr` is actually recognized (string ";lr" is not).
     if (this.cfg.outboundProxy) {
-      headers.route = [{ uri: `sip:${this.cfg.outboundProxy};lr` }];
+      headers.route = [
+        {
+          uri: {
+            schema: "sip",
+            host: this.cfg.outboundProxy,
+            port: this.cfg.port || 5060,
+            params: { lr: null, transport: this.cfg.transport || "udp" },
+            headers: {},
+          },
+        },
+      ];
     }
 
     return {
       method: "REGISTER",
-      uri: `sip:${this.cfg.domain}`,
+      uri: `sip:${this.cfg.domain}:5060`,
       version: "2.0",
       headers,
     } as SipRequest;
@@ -76,10 +90,43 @@ export class SipRegistrar {
 
   private registerOnce(expires = this.cfg.registerExpires): Promise<void> {
     return new Promise((resolve) => {
-      const creds = {
-        user: this.cfg.authUsername || this.cfg.username,
-        password: this.cfg.password,
-        realm: this.cfg.domain,
+      const users = [
+        this.cfg.authUsername || this.cfg.username,
+        this.cfg.username,
+      ].filter((u, i, a) => u && a.indexOf(u) === i);
+
+      const sendAuthed = (base: SipRequest, rs401: SipResponse, user: string) => {
+        const creds = { user, password: this.cfg.password };
+        const rq = this.buildRegister(expires);
+        rq.headers["call-id"] = base.headers["call-id"];
+        try {
+          digest.signRequest(this.authCtx as never, rq, rs401, creds);
+        } catch (err) {
+          log.error("REGISTER digest failed", { err: String(err), user });
+          this.scheduleRetry(30);
+          resolve();
+          return;
+        }
+        log.info("REGISTER digest sent", { user });
+        this.stack.send(rq, (rs2: SipResponse) => {
+          if (
+            rs2?.status === 403 &&
+            /auth/i.test(String(rs2.reason || "")) &&
+            user !== users[users.length - 1]
+          ) {
+            const next = users[users.indexOf(user) + 1];
+            if (next) {
+              log.warn("REGISTER auth failed, retrying with other username", {
+                tried: user,
+                next,
+              });
+              this.authCtx = {};
+              sendAuthed(base, rs401, next);
+              return;
+            }
+          }
+          this.onFinal(rs2, expires, resolve);
+        });
       };
 
       const send = (rq: SipRequest) => {
@@ -92,9 +139,15 @@ export class SipRegistrar {
           }
 
           if (rs.status === 401 || rs.status === 407) {
-            digest.signRequest(this.authCtx as never, rq, rs, creds);
-            rq.headers.cseq = { seq: this.cseq++, method: "REGISTER" };
-            this.stack.send(rq, (rs2: SipResponse) => this.onFinal(rs2, expires, resolve));
+            log.info("REGISTER challenge", {
+              provider: this.cfg.provider,
+              status: rs.status,
+              reason: rs.reason,
+              server: rs.headers.server,
+              www: rs.headers["www-authenticate"],
+              proxy: rs.headers["proxy-authenticate"],
+            });
+            sendAuthed(rq, rs, users[0]);
             return;
           }
 
@@ -125,17 +178,30 @@ export class SipRegistrar {
         contact: this.contact(),
         outboundProxy: this.cfg.outboundProxy || undefined,
       });
+      this.registered = true;
+      this.lastStatus = rs.status;
+      this.lastReason = rs.reason || "OK";
       if (!this.stopped && expires > 0) {
         const refreshMs = Math.max(30, Math.floor(granted * 0.8)) * 1000;
         this.timer = setTimeout(() => void this.registerOnce(), refreshMs);
       }
     } else {
+      this.registered = false;
+      this.lastStatus = rs.status;
+      this.lastReason = rs.reason || "";
       log.error("REGISTER failed", {
         provider: this.cfg.provider,
         status: rs.status,
         reason: rs.reason,
+        server: rs.headers.server,
+        warning: rs.headers.warning,
+        to: rs.headers.to,
+        www: rs.headers["www-authenticate"],
       });
-      if (!this.stopped && expires > 0) this.scheduleRetry(60);
+      if (!this.stopped && expires > 0) {
+        const retrySec = rs.status === 403 || rs.status === 401 ? 90 : 60;
+        this.scheduleRetry(retrySec);
+      }
     }
     resolve();
   }

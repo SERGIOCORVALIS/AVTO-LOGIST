@@ -28,9 +28,9 @@ export function loadTgAccountsFromEnv(): TgAccountConfig[] {
       console.error("[tg-accounts] invalid TG_ACCOUNTS_JSON");
     }
   }
-  const apiId = Number(process.env.TG_API_ID || 0);
-  const apiHash = process.env.TG_API_HASH || "";
-  const session = process.env.TG_STRING_SESSION || "";
+  const apiId = Number(String(process.env.TG_API_ID || "0").split("#")[0].trim());
+  const apiHash = (process.env.TG_API_HASH || "").split("#")[0].trim();
+  const session = (process.env.TG_STRING_SESSION || "").trim();
   if (apiId && apiHash && session) {
     return [
       {

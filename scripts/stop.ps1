@@ -20,11 +20,22 @@ if (-not $DockerOnly) {
       $pidVal = Get-Content $_.FullName -ErrorAction SilentlyContinue
       if ($pidVal) {
         Write-Host "Stopping pid $pidVal ($($_.BaseName))"
+        taskkill /PID $pidVal /T /F 2>$null | Out-Null
         Stop-Process -Id ([int]$pidVal) -Force -ErrorAction SilentlyContinue
-        Get-CimInstance Win32_Process -Filter "ParentProcessId=$pidVal" -ErrorAction SilentlyContinue |
-          ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
       }
       Remove-Item $_.FullName -Force -ErrorAction SilentlyContinue
+    }
+  }
+  foreach ($port in @(3000, 3010, 5173, 8000)) {
+    $pids = @()
+    netstat -ano | Select-String ":$port\s+.+\s+LISTENING\s+(\d+)" | ForEach-Object {
+      if ($_.Matches.Count -gt 0) { $pids += $_.Matches[0].Groups[1].Value }
+    }
+    $pids | Select-Object -Unique | ForEach-Object {
+      if ($_ -and $_ -ne "0") {
+        Write-Host "Stopping listener on :$port pid $_"
+        taskkill /PID $_ /T /F 2>$null | Out-Null
+      }
     }
   }
 }

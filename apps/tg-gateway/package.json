@@ -2,12 +2,16 @@
   "name": "@alo/tg-gateway",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
+  "author": "Pankov Sergey Vladimirovich",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "login": "tsx src/login.ts"
+    "login": "tsx src/login.ts",
+    "staff:bootstrap": "tsx src/staffForumBootstrap.ts",
+    "test": "tsx src/media.test.ts && tsx src/dedupe.test.ts && tsx src/staffPeer.test.ts && tsx src/staffTopics.test.ts"
   },
   "dependencies": {
     "@alo/shared": "workspace:*",

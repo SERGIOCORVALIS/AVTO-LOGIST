@@ -1,43 +1,35 @@
-<pre>
-╔══════════════════════════════════════════════════════════════╗
-║  📜 LOG PLANE · AutoLogistics OS · TAIL · AUDIT · ROTATE     ║
-╚══════════════════════════════════════════════════════════════╝
-</pre>
+# Logs — AutoLogistics OS
 
-# 📜 Logs — AutoLogistics OS
+Папка для отслеживания работы сервисов. Файлы создаются при `setup` / `start`.
 
-Service telemetry lands here automatically during `setup` / `start`.
-
-> 🧊 Treat logs as the **bottom slab** of the 3D stack — everything above writes down here.
-
----
-
-## 🗂️ Tree
+## Структура
 
 ```text
 logs/
-  api/              ⚡ HTTP API (Fastify)
-  gateway/          💬 Telegram gateway + management bot
-  voice/            📞 SIP + OpenAI Realtime
-  workers/          📬 SLA / digest / email / OCR / calendar
-  orchestrator/     🧠 Python deal orchestrator
-  bootstrap/        🧰 setup / start / stop / docker scripts
-  audit/            🛡️ escalations, approve, grey-block, policy
+  api/              HTTP API (Fastify)
+  gateway/          Telegram gateway + Management Bot
+  voice/            Voice gateway (SIP + OpenAI Realtime)
+  workers/          SLA / digest / email / IMAP / OCR
+  orchestrator/     Python deal orchestrator
+  bootstrap/        setup/start/stop/docker + *.pid фоновых процессов
+  audit/            эскалации, approve, grey-block, staff peer
+  mail/             (опционально) отчёты mail-archive-*
+  env-audit.json    результат `node scripts/audit-env.mjs`
 ```
 
-Filenames: `YYYY-MM-DD.log` (daily rotate) + `current.log` (latest stream).
+Имена: `YYYY-MM-DD.log` + `current.log` (последний поток).
 
----
-
-## 👀 Tail (Windows)
+## Просмотр (Windows)
 
 ```powershell
 Get-Content .\logs\api\current.log -Wait -Tail 50
 Get-Content .\logs\orchestrator\current.log -Wait -Tail 50
+Get-Content .\logs\gateway\current.log -Wait -Tail 50
+Get-Content .\logs\workers\current.log -Wait -Tail 50
 Get-Content .\logs\audit\current.log -Wait -Tail 30
 ```
 
-## 👀 Tail (Linux / macOS)
+## Просмотр (Linux/macOS)
 
 ```bash
 tail -f logs/api/current.log
@@ -45,17 +37,13 @@ tail -f logs/orchestrator/current.log
 tail -f logs/audit/current.log
 ```
 
----
+## Переменные
 
-## ⚙️ Env
-
-| Env | Meaning |
-|-----|---------|
-| `LOG_DIR` | Log root (default `./logs`) |
+| Env | Описание |
+|-----|----------|
+| `LOG_DIR` | Корень логов (default: `./logs`) |
 | `LOG_LEVEL` | `debug` \| `info` \| `warn` \| `error` |
 
-Logs are **not committed** (see `.gitignore`) — only `README.md` and `.gitkeep`.
+`start.ps1` / `start.sh` пишут PID в `logs/bootstrap/*.pid`; `stop` читает их.
 
----
-
-<p align="center">📜 Keep the audit plane warm</p>
+Логи **не коммитятся** (кроме `README.md` и `.gitkeep`).

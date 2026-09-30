@@ -1,0 +1,20 @@
+{
+  "code": "pek",
+  "corridor": "ru_domestic",
+  "modes": ["ltl", "groupage", "auto"],
+  "currency": "RUB",
+  "base_per_kg": 28,
+  "eta": [4, 8],
+  "reliability": 0.74,
+  "fees": ["terminal_pickup_optional"],
+  "contact_email": "",
+  "lanes": [
+    {"origin": "москва", "destination": "спб", "per_kg": 22, "eta": [2, 4]},
+    {"origin": "москва", "destination": "екатеринбург", "per_kg": 26, "eta": [4, 7]},
+    {"origin": "москва", "destination": "новосибирск", "per_kg": 32, "eta": [6, 10]}
+  ],
+  "tiers": [
+    {"min_kg": 500, "per_kg": 24},
+    {"min_kg": 1000, "per_kg": 21}
+  ]
+}

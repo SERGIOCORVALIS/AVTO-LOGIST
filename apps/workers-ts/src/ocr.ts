@@ -1,5 +1,14 @@
 import { readFile } from "fs/promises";
 import type { Pool } from "pg";
+import {
+  extractOfficeText,
+  openaiApiKey,
+  openaiBaseUrl,
+  openaiChatExtras,
+  openaiFetchInit,
+  openaiModel,
+  proxiedFetch,
+} from "@alo/shared";
 
 export interface OcrJobData {
   deal_id: string;
@@ -19,8 +28,13 @@ export interface InvoiceParseResult {
   width_cm?: number;
   height_cm?: number;
   quantity?: number;
+  name?: string;
+  description?: string;
+  has_spec?: boolean;
+  invoice_doc?: boolean;
+  from_document?: boolean;
   ocr_text: string;
-  parse_source: "regex" | "llm" | "pdf_text" | "empty";
+  parse_source: "regex" | "llm" | "pdf_text" | "office_text" | "empty";
 }
 
 function extractPdfText(buf: Buffer): string {
@@ -121,35 +135,58 @@ function parseInvoiceFields(text: string): Omit<InvoiceParseResult, "ocr_text" |
     if (Number.isFinite(q) && q > 0) out.quantity = q;
   }
 
+  const looksSpec = /инвойс|invoice|packing\s*list|спецификац|упаковочн/.test(low);
+  if (looksSpec) {
+    out.invoice_doc = true;
+    out.has_spec = true;
+    out.from_document = true;
+  }
+  if (text.trim().length >= 40) {
+    out.from_document = true;
+    out.description = text.trim().slice(0, 1500);
+    if (looksSpec) out.has_spec = true;
+  }
+  const nameLine = text
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .find((s) => s.length >= 8 && s.length <= 180 && !/^(invoice|инвойс|total|сумма)/i.test(s));
+  if (nameLine && !out.name) out.name = nameLine.slice(0, 200);
+
   return out;
 }
 
 async function llmParseInvoice(text: string): Promise<Partial<InvoiceParseResult> | null> {
-  const key = process.env.OPENAI_API_KEY;
+  const key = openaiApiKey();
   if (!key || !text.trim()) return null;
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
-  const base = (process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
+  const model = openaiModel("document");
+  const base = openaiBaseUrl();
   try {
-    const res = await fetch(`${base}/chat/completions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content:
-              "Extract invoice fields as JSON: invoice_value (number), invoice_currency (USD|EUR|CNY|RUB), weight_kg, length_cm, width_cm, height_cm, quantity. Omit unknown fields.",
-          },
-          { role: "user", content: text.slice(0, 12000) },
-        ],
-      }),
-    });
+    const res = await proxiedFetch(
+      `${base}/chat/completions`,
+      openaiFetchInit({
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          ...openaiChatExtras(model, { temperature: 0 }),
+          response_format: { type: "json_object" },
+          messages: [
+            {
+              role: "system",
+              content:
+                "Extract commercial invoice / packing list / specification fields as JSON: " +
+                "name (product name), description (short product description), invoice_value (number), " +
+                "invoice_currency (USD|EUR|CNY|RUB), weight_kg, length_cm, width_cm, height_cm, quantity. " +
+                "Omit unknown fields. Do not invent.",
+            },
+            { role: "user", content: text.slice(0, 12000) },
+          ],
+        }),
+      })
+    );
     if (!res.ok) return null;
     const data = (await res.json()) as {
       choices?: { message?: { content?: string } }[];
@@ -163,39 +200,44 @@ async function llmParseInvoice(text: string): Promise<Partial<InvoiceParseResult
 }
 
 async function visionOcr(buf: Buffer, contentType: string): Promise<string | null> {
-  const key = process.env.OPENAI_API_KEY;
+  const key = openaiApiKey();
   if (!key) return null;
-  const model = process.env.OPENAI_MODEL || "gpt-4o";
-  const base = (process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
+  const model = openaiModel("document");
+  const base = openaiBaseUrl();
   const b64 = buf.toString("base64");
   const mime = contentType.startsWith("image/") ? contentType : "image/jpeg";
   try {
-    const res = await fetch(`${base}/chat/completions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Extract all text from this commercial invoice / packing list. Preserve numbers, currencies, weights, dimensions.",
-              },
-              {
-                type: "image_url",
-                image_url: { url: `data:${mime};base64,${b64}` },
-              },
-            ],
-          },
-        ],
-      }),
-    });
+    const res = await proxiedFetch(
+      `${base}/chat/completions`,
+      openaiFetchInit({
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          ...openaiChatExtras(model, { temperature: 0 }),
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text:
+                    "Extract all text from this commercial invoice / packing list / product specification. " +
+                    "Preserve product name, description, numbers, currencies, weights, dimensions, cities, dates.",
+                },
+                {
+                  type: "image_url",
+                  image_url: { url: `data:${mime};base64,${b64}` },
+                },
+              ],
+            },
+          ],
+        }),
+      })
+    );
     if (!res.ok) return null;
     const data = (await res.json()) as {
       choices?: { message?: { content?: string } }[];
@@ -247,6 +289,16 @@ export async function parseInvoiceAttachment(data: OcrJobData): Promise<InvoiceP
   if (ct.includes("pdf") || name.endsWith(".pdf")) {
     text = extractPdfText(buf);
     source = text ? "pdf_text" : "empty";
+  } else if (
+    ct.includes("word") ||
+    ct.includes("spreadsheet") ||
+    ct.includes("ms-excel") ||
+    ct.includes("msword") ||
+    ct.includes("csv") ||
+    /\.(docx?|xlsx?|xlsm|xlsb|csv|rtf)$/.test(name)
+  ) {
+    text = (await extractOfficeText(buf, data.filename || name, ct)) || "";
+    source = text ? "office_text" : "empty";
   } else if (ct.startsWith("image/") || /\.(png|jpe?g|webp|gif)$/.test(name)) {
     const vision = await visionOcr(buf, ct || "image/jpeg");
     text = vision || "";
@@ -281,6 +333,14 @@ export async function applyOcrToDeal(pool: Pool, data: OcrJobData, parsed: Invoi
   if (parsed.width_cm != null) cargoPatch.width_cm = parsed.width_cm;
   if (parsed.height_cm != null) cargoPatch.height_cm = parsed.height_cm;
   if (parsed.quantity != null) cargoPatch.quantity = parsed.quantity;
+  if (parsed.name) cargoPatch.name = parsed.name;
+  if (parsed.description) {
+    cargoPatch.description = parsed.description;
+    cargoPatch.spec_description = parsed.description;
+  }
+  if (parsed.has_spec) cargoPatch.has_spec = true;
+  if (parsed.invoice_doc) cargoPatch.invoice_doc = true;
+  if (parsed.from_document || parsed.ocr_text) cargoPatch.from_document = true;
 
   const deal = await pool.query(`SELECT id, cargo, metadata FROM deals WHERE id = $1`, [
     data.deal_id,
@@ -305,6 +365,9 @@ export async function applyOcrToDeal(pool: Pool, data: OcrJobData, parsed: Invoi
             width_cm: parsed.width_cm,
             height_cm: parsed.height_cm,
             quantity: parsed.quantity,
+            name: parsed.name,
+            has_spec: parsed.has_spec,
+            invoice_doc: parsed.invoice_doc,
             parse_source: parsed.parse_source,
           },
         }

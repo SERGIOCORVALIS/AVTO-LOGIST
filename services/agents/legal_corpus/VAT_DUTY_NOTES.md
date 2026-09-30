@@ -1,28 +1,22 @@
-<pre>
-╔══════════════════════════════════════════════════╗
-║  💱 VAT & CUSTOMS · AI CONTEXT NOTES             ║
-╚══════════════════════════════════════════════════╝
-</pre>
+# НДС и таможенные платежи (контекст для AI)
 
-# 💱 VAT & customs payments (AI context)
+Ориентир для предварительных расчётов импорта в РФ/ЕАЭС (уточнять у брокера):
 
-Working guide for **preliminary** RF / EAEU import estimates (always confirm with a broker):
+## База
+- Таможенная стоимость (ТСст / CV) — обычно стоимость по инвойсу (+ при необходимости транспорт/страховка по правилам Incoterms).
+- **Нельзя** занижать инвойс.
 
-## Base
-- Customs value (CV) — usually invoice value (+ freight/insurance when Incoterms require it).
-- **Never** understate the invoice.
-
-## Duty
+## Пошлина
 - `duty_rub = CV * duty_pct / 100`
-- `duty_pct` depends on the EAEU HS code (prefer `hs_duty_rates` DB).
+- `duty_pct` зависит от кода ТН ВЭД ЕАЭС.
 
-## VAT
-- Default import VAT in RF is often **20%** (0% / 10% only with proven grounds).
+## НДС (налог на добавленную стоимость)
+- Базовая ставка НДС при ввозе в РФ часто **20%** (льготы/0%/10% — только при подтверждённом основании).
 - `vat_rub = (CV + duty_rub + excise_rub) * vat_pct / 100`
 
-## Other lines
-- Excise — for excisable goods only.
-- Broker / warehouse / inspection — separate lines.
-- Certification / DoC / marking — separate lines.
+## Прочее
+- Акциз — для подакцизных товаров.
+- Услуги брокера / СВХ / досмотр — отдельно.
+- Сертификация / декларация соответствия / маркировка — отдельной строкой.
 
-Mark every KP figure as a **preliminary estimate** until HS + invoice are confirmed.
+Все цифры в КП помечать как **предварительная оценка** до подтверждения ТН ВЭД и инвойса.

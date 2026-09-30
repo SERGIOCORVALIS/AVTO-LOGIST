@@ -8,6 +8,25 @@ import { handleInboundInvite } from "./calls";
 
 const log = createLogger("sip-trunk");
 
+function sipPreview(msg: unknown): string {
+  if (typeof msg === "string") return msg.slice(0, 220);
+  if (msg && typeof msg === "object") {
+    const m = msg as {
+      method?: string;
+      status?: number;
+      reason?: string;
+      uri?: unknown;
+      headers?: { "call-id"?: string };
+    };
+    const uri = typeof m.uri === "string" ? m.uri : "";
+    return [m.method || m.status, uri || m.reason, m.headers?.["call-id"]]
+      .filter(Boolean)
+      .join(" ")
+      .slice(0, 220);
+  }
+  return String(msg).slice(0, 220);
+}
+
 export interface SipTrunk {
   cfg: SipConfig;
   stack: SipStack;
@@ -28,11 +47,11 @@ export async function startSipTrunk(deps: {
 
   const stack = new SipStack({
     port: cfg.port,
-    address: cfg.bindHost,
+    address: cfg.bindHost === "0.0.0.0" ? undefined : cfg.bindHost,
     publicAddress: cfg.publicHost,
     hostname: cfg.publicHost,
-    udp: true,
-    tcp: false,
+    udp: cfg.transport !== "tcp",
+    tcp: cfg.transport === "tcp",
     credentials: cfg.username
       ? {
           user: cfg.authUsername || cfg.username,
@@ -44,11 +63,11 @@ export async function startSipTrunk(deps: {
     maxConcurrentCalls: cfg.maxConcurrentCalls,
     rtpPortMin: cfg.rtpPortMin,
     rtpPortMax: cfg.rtpPortMax,
-    keepaliveTargets: [{ uri: cfg.keepaliveUri, interval: 30000 }],
+    keepaliveTargets: [],
     logger: {
       error: (err: unknown) => log.error(String(err)),
-      send: (msg: string) => log.info("sip send", { msg: String(msg).slice(0, 120) }),
-      recv: (msg: string) => log.info("sip recv", { msg: String(msg).slice(0, 120) }),
+      send: (msg: unknown) => log.info("sip send", { preview: sipPreview(msg) }),
+      recv: (msg: unknown) => log.info("sip recv", { preview: sipPreview(msg) }),
     },
   });
 
@@ -74,6 +93,7 @@ export async function startSipTrunk(deps: {
     domain: cfg.domain,
     outboundProxy: cfg.outboundProxy || undefined,
     uriMode: cfg.uriMode,
+    transport: cfg.transport,
     codec: cfg.payloadType === 8 ? "PCMA" : "PCMU",
   });
 

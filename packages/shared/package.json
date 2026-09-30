@@ -2,14 +2,23 @@
   "name": "@alo/shared",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
+  "author": "Pankov Sergey Vladimirovich",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx src/office.test.ts && tsx src/staffCopy.test.ts && tsx src/openai.test.ts && tsx src/mailRules.test.ts"
+  },
+  "dependencies": {
+    "mammoth": "^1.9.1",
+    "undici": "^6.21.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
 }

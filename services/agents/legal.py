@@ -5,228 +5,241 @@ from typing import Any
 
 from common import extract_json, load_prompt, settings
 from common.company import company_as_dict, company_requisites_md, load_company
-from common.llm import chat_json, deepseek_client
+from common.llm import chat_parsed, gpt_client, model_for
 from agents.legal_corpus import load_legal_context
-from agents.customs import compute_customs_clearance
+from agents.customs import compute_customs_clearance, resolve_invoice_value_rub
 
 
-RESTRICTED_KEYWORDS = [
-    "оружие",
-    "weapon",
-    "наркот",
-    "drone military",
-    "военн",
-]
+_NULLABLE_NUM = {"type": ["number", "null"]}
 
-SANCTIONS_KEYWORDS = [
-    "military",
-    "двойного назначения",
-    "шифрован",
-    "radiation",
-]
+LEGAL_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": False,
+    "properties": {
+        "hs_candidates": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "code": {"type": "string"},
+                    "description": {"type": "string"},
+                    "duty_rate": {"type": "number"},
+                    "uncertainty": {"type": "number"},
+                },
+                "required": ["code", "description", "duty_rate", "uncertainty"],
+            },
+        },
+        "duties_estimate": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "customs_value_rub": _NULLABLE_NUM,
+                "invoice_value_rub": _NULLABLE_NUM,
+                "duty_pct": _NULLABLE_NUM,
+                "duty_rub": _NULLABLE_NUM,
+                "vat_pct": _NULLABLE_NUM,
+                "vat_rub": _NULLABLE_NUM,
+                "vat_base_rub": _NULLABLE_NUM,
+                "excise_rub": {"type": "number"},
+                "broker_fee_rub": {"type": "number"},
+                "cert_fee_rub": {"type": "number"},
+                "clearance_total_rub": _NULLABLE_NUM,
+                "missing_invoice": {"type": "boolean"},
+                "is_estimate": {"type": "boolean"},
+                "disclaimer": {"type": "string"},
+                "formula": {"type": "string"},
+                "battery": {"type": "boolean"},
+                "restricted": {"type": "boolean"},
+            },
+            "required": [
+                "customs_value_rub",
+                "invoice_value_rub",
+                "duty_pct",
+                "duty_rub",
+                "vat_pct",
+                "vat_rub",
+                "vat_base_rub",
+                "excise_rub",
+                "broker_fee_rub",
+                "cert_fee_rub",
+                "clearance_total_rub",
+                "missing_invoice",
+                "is_estimate",
+                "disclaimer",
+                "formula",
+                "battery",
+                "restricted",
+            ],
+        },
+        "compliance_flags": {"type": "array", "items": {"type": "string"}},
+        "law_changes_relevant": {"type": "array", "items": {"type": "string"}},
+        "contract_draft_md": {"type": "string"},
+        "client_risk_summary": {"type": "string"},
+        "must_approve": {"type": "boolean"},
+        "confidence": {"type": "number"},
+        "sources": {"type": "array", "items": {"type": "string"}},
+        "risk_matrix": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "code": {"type": "string"},
+                    "severity": {"type": "string"},
+                    "description": {"type": "string"},
+                    "mitigation": {"type": "string"},
+                },
+                "required": ["code", "severity", "description", "mitigation"],
+            },
+        },
+    },
+    "required": [
+        "hs_candidates",
+        "duties_estimate",
+        "compliance_flags",
+        "law_changes_relevant",
+        "contract_draft_md",
+        "client_risk_summary",
+        "must_approve",
+        "confidence",
+        "sources",
+        "risk_matrix",
+    ],
+}
+
+
+def _log_warn(event: str, error: str) -> None:
+    try:
+        from common.logutil import log as file_log
+
+        file_log("orchestrator", "warn", event, error=error[:400])
+    except Exception:
+        pass
 
 
 def run_legal_research(deal: dict[str, Any], cargo_est: dict[str, Any] | None = None) -> dict[str, Any]:
+    data = _gpt_legal(deal, cargo_est)
+    flags = list(data.get("compliance_flags") or [])
+    duties_in = data.get("duties_estimate") if isinstance(data.get("duties_estimate"), dict) else {}
+    if duties_in.get("restricted") and "restricted_goods" not in flags:
+        flags.append("restricted_goods")
+    if duties_in.get("battery") and "battery_transport_rules" not in flags:
+        flags.append("battery_transport_rules")
+    data["compliance_flags"] = flags
+    if duties_in.get("restricted") or "restricted_goods" in flags:
+        data["must_approve"] = True
+    if duties_in.get("battery"):
+        data["must_approve"] = True
+
+    data["duties_estimate"] = compute_customs_clearance(
+        deal, data, freight_rub=0.0
+    )
+    data.setdefault("risk_matrix", [])
+    return data
+
+
+def _gpt_legal(deal: dict[str, Any], cargo_est: dict[str, Any] | None) -> dict[str, Any]:
     cargo = deal.get("cargo") or {}
-    name = (cargo.get("name") or "").lower()
+    if not settings.openai_api_key:
+        _log_warn("legal_llm_missing_key", "OPENAI_API_KEY empty")
+        return _unavailable_legal(deal, "no_openai_key")
 
-    for kw in RESTRICTED_KEYWORDS:
-        if kw in name:
-            return {
-                "hs_candidates": [],
-                "duties_estimate": compute_customs_clearance(deal, {}),
-                "compliance_flags": ["restricted_goods"],
-                "law_changes_relevant": [],
-                "contract_draft_md": "",
-                "client_risk_summary": "Товар может относиться к ограниченным категориям — требуется проверка менеджером.",
-                "must_approve": True,
-                "confidence": 0.9,
-                "sources": ["internal_restricted_list"],
-                "risk_matrix": [
-                    {
-                        "code": "restricted",
-                        "severity": "critical",
-                        "description": "Restricted goods keyword match",
-                    }
-                ],
-            }
+    system = load_prompt("gpt", "legal.md")
+    try:
+        from agents.tz_policy import academy_active
 
-    if settings.deepseek_api_key:
+        if academy_active(layer="prompts"):
+            academy = load_prompt("gpt", "academy.md")
+            system = system + "\n\n## Академия (таможня/документы/риски)\n" + "\n".join(
+                line
+                for line in academy.splitlines()
+                if any(
+                    k in line.lower()
+                    for k in (
+                        "тамож",
+                        "втт",
+                        "инвойс",
+                        "msds",
+                        "опасн",
+                        "документ",
+                        "инкотерм",
+                        "предварительн",
+                        "не выдумывай",
+                    )
+                )
+            )[:3500]
+    except Exception:
+        pass
+    company = load_company()
+    corpus = load_legal_context(
+        str(cargo.get("name") or cargo.get("category") or "ндс пошлина батареи ограничения")
+    )
+    invoice_rub, invoice_src = resolve_invoice_value_rub(cargo, deal)
+    user = json.dumps(
+        {
+            "company": company_as_dict(company),
+            "company_requisites_md": company_requisites_md(company),
+            "cargo": cargo,
+            "route": deal.get("route"),
+            "cargo_estimate": cargo_est,
+            "amount_rub": deal.get("amount_rub"),
+            "invoice_value_rub": invoice_rub,
+            "invoice_value_source": invoice_src,
+            "legal_corpus_excerpt": corpus,
+            "compute_duty_and_vat_yourself": True,
+        },
+        ensure_ascii=False,
+    )
+    last_err: Exception | None = None
+    for _ in range(2):
         try:
-            system = load_prompt("deepseek", "legal.md")
-            company = load_company()
-            corpus = load_legal_context(
-                str(cargo.get("name") or cargo.get("category") or "ндс пошлина")
-            )
-            user = json.dumps(
-                {
-                    "company": company_as_dict(company),
-                    "company_requisites_md": company_requisites_md(company),
-                    "cargo": cargo,
-                    "route": deal.get("route"),
-                    "cargo_estimate": cargo_est,
-                    "amount_rub": deal.get("amount_rub"),
-                    "legal_corpus_excerpt": corpus,
-                },
-                ensure_ascii=False,
-            )
-            raw = chat_json(
-                deepseek_client(),
-                settings.deepseek_model,
+            data = chat_parsed(
+                gpt_client(),
+                model_for("document"),
                 system,
                 user,
+                LEGAL_SCHEMA,
+                schema_name="legal_research",
                 temperature=0.2,
+                trace_name="legal",
             )
-            data = extract_json(raw)
+            if not isinstance(data, dict):
+                data = extract_json(str(data))
+            data.setdefault("hs_candidates", [])
+            data.setdefault("duties_estimate", {})
+            data.setdefault("compliance_flags", [])
+            data.setdefault("law_changes_relevant", [])
+            data.setdefault("contract_draft_md", "")
+            data.setdefault("client_risk_summary", "")
             data.setdefault("risk_matrix", [])
-            # Normalize / fill numeric customs+VAT
-            data["duties_estimate"] = compute_customs_clearance(
-                deal, data, freight_rub=0.0
-            )
+            data.setdefault("sources", ["gpt"])
             return data
-        except Exception:
-            pass
+        except Exception as exc:
+            last_err = exc
+            continue
+    _log_warn("legal_llm_failed", str(last_err or "unknown"))
+    return _unavailable_legal(deal, str(last_err or "gpt_failed"))
 
-    return _heuristic_legal(deal)
 
-
-def _heuristic_legal(deal: dict[str, Any]) -> dict[str, Any]:
-    cargo = deal.get("cargo") or {}
-    name = cargo.get("name") or "товар"
-    low = name.lower()
-    battery = bool(cargo.get("battery")) or any(
-        x in low for x in ("powerbank", "пауэр", "аккумул", "li-ion", "литий")
-    )
-    sanctions_hit = any(k in low for k in SANCTIONS_KEYWORDS)
-
-    # Prefer feed-backed HS codes by category
-    if battery:
-        code = "8507.60"
-        desc = "Li-ion accumulators"
-        unc = 0.45
-    else:
-        cat = (cargo.get("category") or "").lower()
-        name_l = low
-        if cat == "textile" or any(x in name_l for x in ("ткан", "одежд", "футболк")):
-            code, desc, unc = "6109.10", "T-shirts / textile", 0.55
-        elif any(x in name_l for x in ("phone", "телефон", "smartphone")):
-            code, desc, unc = "8517.13", "Smartphones", 0.5
-        elif any(x in name_l for x in ("laptop", "notebook", "ноут")):
-            code, desc, unc = "8471.30", "Portable computers", 0.5
-        else:
-            code, desc, unc = "8518.30", "Headphones / electronics n.e.s.", 0.6
-    try:
-        from common.db import lookup_hs_duty
-
-        db_row = lookup_hs_duty(code)
-    except Exception:
-        db_row = None
-    duty = float(db_row["duty_pct"]) if db_row else 5.0
-    hs = [
-        {
-            "code": code,
-            "description": desc + (" (db feed)" if db_row else " (confirm with broker)"),
-            "duty_rate": duty,
-            "uncertainty": 0.35 if db_row else unc,
-            "duty_source": f"db:{db_row['source']}" if db_row else "heuristic",
-        }
-    ]
-    if not battery and not db_row:
-        hs.append(
-            {
-                "code": "9403.60",
-                "description": "Alternative HS — confirm with broker",
-                "duty_rate": 10.0,
-                "uncertainty": 0.8,
-            }
-        )
-
-    flags: list[str] = []
-    if battery:
-        flags.extend(["battery_transport_rules", "possible_certification", "marking_check"])
-    if sanctions_hit:
-        flags.append("sanctions_review")
-
-    duties = compute_customs_clearance(
-        deal,
-        {"hs_candidates": hs, "duties_estimate": {}},
-        freight_rub=0.0,
-    )
-
-    must = (
-        battery
-        or sanctions_hit
-        or duties.get("missing_invoice")
-        or (hs[0].get("uncertainty", 1) or 1) >= 0.7
-        or (deal.get("amount_rub") or 0) > 300_000
-    )
-
-    company = load_company()
-    requisites = company_requisites_md(company)
-    draft = f"""# Договор транспортно-экспедиторских услуг (черновик)
-
-## Стороны
-**Экспедитор:**
-{requisites}
-
-**Клиент:** реквизиты указываются в заявке / приложении.
-
-## 1. Предмет
-Экспедитор ({company.legal_name}) организует перевозку груза «{name}» по маршруту, указанному в заявке.
-
-## 2. Цена и оплата
-Стоимость услуг определяется коммерческим предложением. Ориентировочные ставки действуют до истечения TTL.
-Окончательная стоимость фиксируется после подтверждённых ставок перевозчика и таможенной оценки (пошлина + НДС).
-
-## 3. Таможенное оформление
-Клиент предоставляет корректные инвойсы и спецификации. Стороны не используют схемы занижения стоимости.
-Предварительная оценка: пошлина + НДС 20% (если нет льготы) + брокер. Риски классификации ТН ВЭД — по согласованным условиям.
-
-## 4. Сроки
-Сроки доставки ориентировочные и зависят от таможни, досмотров и форс-мажора.
-
-## 5. Ответственность и страхование
-Ответственность ограничена условиями договора и страховки. Франшиза — по полису.
-
-## 6. Претензии
-Претензионный порядок обязателен до суда.
-"""
-    summary_parts = []
-    if duties.get("missing_invoice"):
-        summary_parts.append("Для расчёта пошлины и НДС нужна сумма инвойса.")
-    else:
-        summary_parts.append(
-            f"Оценка таможни: пошлина ≈{duties.get('duty_rub', 0):.0f} ₽, "
-            f"НДС {duties.get('vat_pct')}% ≈{duties.get('vat_rub', 0):.0f} ₽, "
-            f"итого очистка ≈{duties.get('clearance_total_rub', 0):.0f} ₽."
-        )
-    if battery:
-        summary_parts.append("Батареи: возможны доп. требования по перевозке/сертификации.")
-
+def _unavailable_legal(deal: dict[str, Any], reason: str) -> dict[str, Any]:
+    """No template contract / HS guesses — GPT is the classifier; this is only if the model is down."""
     return {
-        "hs_candidates": hs,
-        "duties_estimate": duties,
-        "compliance_flags": flags,
-        "law_changes_relevant": [
-            "Учитывать актуальные решения ЕЭК/ФТС по ТН ВЭД и ставкам НДС при ввозе.",
-        ],
-        "contract_draft_md": draft,
-        "client_risk_summary": " ".join(summary_parts),
-        "must_approve": must,
-        "confidence": 0.45 if duties.get("missing_invoice") else 0.55,
-        "sources": ["heuristic_internal", "VAT_DUTY_NOTES", "requires_broker_confirmation"],
+        "hs_candidates": [],
+        "duties_estimate": {},
+        "compliance_flags": ["gpt_unavailable"],
+        "law_changes_relevant": [],
+        "contract_draft_md": "",
+        "client_risk_summary": "Юридическая оценка через GPT недоступна — нужна проверка менеджером.",
+        "must_approve": True,
+        "confidence": 0.0,
+        "sources": [f"gpt_unavailable:{reason}"],
         "risk_matrix": [
             {
-                "code": "hs_uncertainty",
-                "severity": "high" if (hs[0].get("uncertainty") or 0) >= 0.7 else "medium",
-                "description": "HS code not broker-confirmed",
-                "mitigation": "broker confirmation before contract final",
-            },
-            {
-                "code": "vat_duty_estimate",
-                "severity": "medium" if not duties.get("missing_invoice") else "high",
-                "description": "Duty+VAT preliminary until invoice/HS confirmed",
-                "mitigation": "collect invoice; confirm HS; recalculate",
-            },
+                "code": "gpt_unavailable",
+                "severity": "high",
+                "description": "Legal/customs GPT call failed",
+                "mitigation": "retry GPT; broker review before contract",
+            }
         ],
     }

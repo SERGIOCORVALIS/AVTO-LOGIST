@@ -12,6 +12,8 @@ import { config as loadEnv } from "dotenv";
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions";
 import input from "input";
+import { gramJsProxy } from "@alo/shared";
+import { gramJsFakeTlsParams, patchGramJsFakeTlsConnection } from "./mtprotoFakeTls";
 
 // Monorepo root .env (pnpm --filter runs with cwd = apps/tg-gateway)
 loadEnv({ path: resolve(__dirname, "../../../.env") });
@@ -83,9 +85,23 @@ async function login() {
     process.exit(1);
   }
 
+  const proxy = gramJsProxy();
+  const isMtProto = Boolean(proxy && "MTProxy" in proxy);
+  console.log(
+    proxy
+      ? isMtProto
+        ? `Using MTProto ${proxy.ip}:${proxy.port}`
+        : `Using SOCKS ${(proxy as { ip: string; port: number }).ip}:${(proxy as { ip: string; port: number }).port}`
+      : "Direct connection (no proxy)"
+  );
   const client = new TelegramClient(new StringSession(""), apiId, apiHash, {
     connectionRetries: 5,
+    useWSS: false,
+    ...(proxy ? { proxy } : {}),
+    ...(isMtProto ? (gramJsFakeTlsParams() as object) : {}),
+    ...(isMtProto ? { autoReconnect: true } : {}),
   });
+  if (isMtProto) patchGramJsFakeTlsConnection(client);
 
   await client.start({
     phoneNumber: readPhone,

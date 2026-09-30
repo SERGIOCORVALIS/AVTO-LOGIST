@@ -27,6 +27,14 @@ fi
 
 pnpm --filter @alo/shared build >/dev/null
 
+echo "==> DB migrate"
+pnpm db:migrate || echo "warn: db:migrate failed"
+SEED_FLAG=$(grep -E '^SEED_SUPPLIERS_ON_BOOT=' .env 2>/dev/null | cut -d= -f2- | tr -d '"' | tr '[:upper:]' '[:lower:]' || echo true)
+if [[ "$SEED_FLAG" =~ ^(0|false|no|off)$ ]]; then
+  echo "==> seed:suppliers (boot-seed off)"
+  pnpm seed:suppliers || echo "warn: seed failed"
+fi
+
 start_bg() {
   local name="$1"; shift
   echo "Starting $name..."

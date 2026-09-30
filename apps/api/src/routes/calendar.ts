@@ -10,6 +10,17 @@ function toIcsDate(d: Date): string {
 }
 
 export function registerCalendarRoutes(app: FastifyInstance) {
+  app.get("/calendar/events", async () => {
+    const r = await pool.query(
+      `SELECT id, deal_id, kind, title, due_at, done, metadata
+       FROM calendar_events
+       WHERE done = FALSE AND due_at > NOW() - INTERVAL '1 day'
+       ORDER BY due_at ASC
+       LIMIT 100`
+    );
+    return r.rows;
+  });
+
   app.get("/calendar/export.ics", async (_req, reply) => {
     const r = await pool.query(
       `SELECT id, deal_id, kind, title, due_at, done

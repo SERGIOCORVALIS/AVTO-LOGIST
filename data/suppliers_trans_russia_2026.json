@@ -1,0 +1,3610 @@
+{
+  "source": "TRANSINVEST_AI_Logist_TZ_v1/Транс раша 2026.xlsx",
+  "imported_at": "2026-08-21",
+  "counts": {
+    "total": 120,
+    "with_email": 115,
+    "by_sheet": {
+      "Контейнеры": 46,
+      "Китай": 24,
+      "Негабарит": 3,
+      "Море": 20,
+      "ЖД": 17,
+      "Авиа": 13,
+      "Авто собств.": 21
+    }
+  },
+  "suppliers": [
+    {
+      "name": "10 Cubits",
+      "code": "10_cubits",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Abhishek \nSaivignesh"
+      ],
+      "phones": [
+        "+91 8879759776",
+        "+91 8825944043"
+      ],
+      "emails": [
+        "abhishek@10cubits.co",
+        "saivignesh@10cubits.co"
+      ],
+      "notes": [
+        "Вся Азия, Индия"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "7177 Карго",
+      "code": "7177_kargo",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Сергей"
+      ],
+      "phones": [
+        "+7 926 243 88 27"
+      ],
+      "emails": [],
+      "notes": [
+        "сборка авто из китая"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Азиялинк Логистикс",
+      "code": "aziyalink_logistiks",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [],
+      "phones": [
+        "+7 977 661 5262"
+      ],
+      "emails": [
+        "nr@asi-log.com"
+      ],
+      "notes": [
+        "Авиа Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Аметист",
+      "code": "ametist",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "Море"
+      ],
+      "contacts": [
+        "Георгий\nПавел\nДмитрий\nОлег"
+      ],
+      "phones": [
+        "+7 952 974 02 66",
+        "+7 900 268 80 85",
+        "+7 921 574 78 85",
+        "+7 921 793 41 83"
+      ],
+      "emails": [
+        "g.gvaniya@ametistline.ru",
+        "p.merinov@ametistline.ru",
+        "d.stelnikov@ametistline.ru",
+        "o.gnedko@ametistline.ru"
+      ],
+      "notes": [
+        "Новороссийск-мерсин, -Амбарли,Гебзе, Александрия,Хайба,Ашдод. \nПодходят для перевозки охлажденной и замор. продукции.Собств. парк контейнеров"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Барс профи",
+      "code": "bars_profi",
+      "modes": [
+        "ftl_truck",
+        "road_train"
+      ],
+      "corridors": [
+        "ru_domestic",
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Негабарит"
+      ],
+      "contacts": [
+        "Булат"
+      ],
+      "phones": [
+        "+7 903 338 37 02"
+      ],
+      "emails": [
+        "vdm@barsprofi.ru"
+      ],
+      "notes": [
+        "Собств. Турция,Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Ветер Востока",
+      "code": "veter_vostoka",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Галина Коростылёва"
+      ],
+      "phones": [
+        "79132682851"
+      ],
+      "emails": [
+        "korostyleva.gv@kavetervostoka.ru"
+      ],
+      "notes": [
+        "Удл. фуры из Китая"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Вэлмо Логистик",
+      "code": "velmo_logistik",
+      "modes": [
+        "container",
+        "sea",
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "Авто собств."
+      ],
+      "contacts": [
+        "Дмитрий"
+      ],
+      "phones": [
+        "+7 922 514 37 76",
+        "+79658420062",
+        "+79225143776"
+      ],
+      "emails": [
+        "korepanovda@valmo.trade",
+        "logistica@valmo.trade"
+      ],
+      "notes": [
+        "Море, авиа , жд",
+        "РФ- Китай, Индия, Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Главный путь",
+      "code": "glavnyy_put",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [],
+      "phones": [
+        "+7 499 757 98 05"
+      ],
+      "emails": [
+        "info@glavput.ru"
+      ],
+      "notes": [
+        "По РФ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Гольфстрим",
+      "code": "golfstrim",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [],
+      "phones": [
+        "+7 8617 301 245",
+        "+7 915 016 14 88",
+        "+7 965 824 6318"
+      ],
+      "emails": [
+        "info@gcnvr.ru"
+      ],
+      "notes": [
+        "свои танки, свой терминал"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ДелЭкспресс",
+      "code": "delekspress",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container",
+        "road_train"
+      ],
+      "corridors": [
+        "cn_import",
+        "international",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Китай",
+        "Авто собств."
+      ],
+      "contacts": [],
+      "phones": [
+        "+7 952 229 78 20"
+      ],
+      "emails": [
+        "sav@delexpress.ru"
+      ],
+      "notes": [
+        "Китай | Все виды перевозок",
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Жагра Лоджистикс",
+      "code": "zhagra_lodzhistiks",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "Море"
+      ],
+      "contacts": [],
+      "phones": [
+        "+7 905 485 70 10"
+      ],
+      "emails": [
+        "office@jagralogistics.com"
+      ],
+      "notes": [
+        "ОАЭ Катар Оман Бахрейн Кувейт Ирак Саудовская Аравия"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "инлоджик",
+      "code": "inlodzhik",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [],
+      "phones": [],
+      "emails": [],
+      "notes": [],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ЙЕС Логистикс",
+      "code": "yes_logistiks",
+      "modes": [
+        "container",
+        "sea",
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "Авто собств."
+      ],
+      "contacts": [
+        "Сушков Сергей комм.директор"
+      ],
+      "phones": [
+        "+7495 1271747",
+        "+79162348899"
+      ],
+      "emails": [
+        "s.sushkov@yeslogistics.ru"
+      ],
+      "notes": [
+        "свои авто\nДальн.восток\nсобственные из Китая"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Комфортлайн",
+      "code": "komfortlayn",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Елена"
+      ],
+      "phones": [
+        "+7 988 603 92 70",
+        "+7 861 279 98 10"
+      ],
+      "emails": [
+        "operation@kmfine.com"
+      ],
+      "notes": [
+        "Краснодар"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Котлин",
+      "code": "kotlin",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [],
+      "phones": [
+        "+7 812 309 46 43"
+      ],
+      "emails": [
+        "office@kotlin-sc.ru"
+      ],
+      "notes": [
+        "РФ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Кристал Альянс",
+      "code": "kristal_alyans",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Виктория Захарова"
+      ],
+      "phones": [
+        "+79502879023",
+        "+74232060372"
+      ],
+      "emails": [
+        "sales2@crystalalliance.ru"
+      ],
+      "notes": [
+        "Собств.флот"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Логистика севера",
+      "code": "logistika_severa",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [],
+      "phones": [
+        "+7 964 421 12 42",
+        "+7 914 270 02 29"
+      ],
+      "emails": [
+        "tk-1409@mail.ru"
+      ],
+      "notes": [
+        "Якутия"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Меридианы Тихого",
+      "code": "meridiany_tihogo",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Зам.Директора Андрей Анатольевич"
+      ],
+      "phones": [
+        "Тел:8 (4236)665-724 Моб.: 8-914-731-51-30"
+      ],
+      "emails": [],
+      "notes": [
+        "Владивосток                 3-9 класс опасности | Все виды"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Негабаритика",
+      "code": "negabaritika",
+      "modes": [
+        "ftl_truck",
+        "road_train"
+      ],
+      "corridors": [
+        "ru_domestic",
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Негабарит"
+      ],
+      "contacts": [],
+      "phones": [
+        "+7(4722) 500 188",
+        "8 800 600 21 75"
+      ],
+      "emails": [
+        "info@negabaritika.ru"
+      ],
+      "notes": [
+        "собств.\nРФ,СНГ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Огненный Кленовый Лист",
+      "code": "ognennyy_klenovyy_list",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Леонард"
+      ],
+      "phones": [
+        "+7 985 452 55 56",
+        "+7 993 353 30 36"
+      ],
+      "emails": [
+        "sc@firemapleleaf.ru",
+        "info@firemapleleaf.ru"
+      ],
+      "notes": [
+        "Направить запрос"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ОЖДХ",
+      "code": "ozhdh",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [
+        "Меруерт Исамидинова"
+      ],
+      "phones": [
+        "+7 725 295 22 15",
+        "+7 776 361 30 63",
+        "+7 701 999 3639",
+        "+7 705 278 9552"
+      ],
+      "emails": [
+        "info@ogdh.kz"
+      ],
+      "notes": [
+        "ЖД Казахстан"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Омаир Каюм Лодхи",
+      "code": "omair_kayum_lodhi",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Омаир"
+      ],
+      "phones": [
+        "+92 21 328 51800-4Ext - 300",
+        "+92 302 8727444",
+        "+92 300 0227813"
+      ],
+      "emails": [
+        "oqlodhi@pscs-psg.com"
+      ],
+      "notes": [
+        "Пакистан"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Парус",
+      "code": "parus",
+      "modes": [
+        "sea",
+        "container",
+        "rail",
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Море",
+        "ЖД",
+        "Авиа"
+      ],
+      "contacts": [
+        "Рамазан"
+      ],
+      "phones": [
+        "+7 910 546 76 59",
+        "+7 495 643 19 55 доб.4349"
+      ],
+      "emails": [
+        "r.abidov@tpp.ru"
+      ],
+      "notes": [
+        "международная логистика авиа, море, жд, авто"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Помор шипинг",
+      "code": "pomor_shiping",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "Море"
+      ],
+      "contacts": [
+        "Ахунд Алим"
+      ],
+      "phones": [
+        "+7 929 166 81 06 Калининград",
+        "8 800 101 96 89 Архангельск"
+      ],
+      "emails": [
+        "agency@pomor-shipping.ru",
+        "office@pomor-shipping.ru"
+      ],
+      "notes": [
+        "Россия, Бразилия, Турция, Китай. На Сахалин не едут",
+        "Россия, Бразилия, Турция, Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Реилфлагман логистик",
+      "code": "reilflagman_logistik",
+      "modes": [
+        "container",
+        "sea",
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "ЖД"
+      ],
+      "contacts": [
+        "Анастасия",
+        "Виктория"
+      ],
+      "phones": [
+        "+7(812)2504514 доб.237",
+        "+7 9216319941",
+        "+7(812)2504514 доб.225",
+        "+79313623255"
+      ],
+      "emails": [
+        "kas@rfl.spb.ru",
+        "info@rfl.spb.ru",
+        "salescont@rfl.spb.ru",
+        "dvd@rfl.spb.ru"
+      ],
+      "notes": [
+        "Россия, Балтия, СНГ",
+        "Россия, СНГ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Синьцзянская Международная Логистическая Компания",
+      "code": "sintszyanskaya_mezhdunarodnaya_logisticheskaya_k",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [],
+      "phones": [
+        "+86 18140942878",
+        "+86 9912576277"
+      ],
+      "emails": [
+        "info@hrgszhx.com"
+      ],
+      "notes": [
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "скай карго сервис",
+      "code": "skay_kargo_servis",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [],
+      "phones": [],
+      "emails": [
+        "info@scs-aero.ru"
+      ],
+      "notes": [],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Союз",
+      "code": "soyuz",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Султан"
+      ],
+      "phones": [
+        "+7 962 574 35 66"
+      ],
+      "emails": [
+        "9625743566@souz-logist.ru"
+      ],
+      "notes": [
+        "Хэйхэ,Пекин,Благовещенск,Владивосток"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Тека",
+      "code": "teka",
+      "modes": [
+        "ftl_truck",
+        "road_train"
+      ],
+      "corridors": [
+        "ru_domestic",
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Негабарит"
+      ],
+      "contacts": [
+        "Ком.директор"
+      ],
+      "phones": [
+        "+7 906 125 31 13"
+      ],
+      "emails": [
+        "teka-samara@mail.ru"
+      ],
+      "notes": [
+        "СНГ,РФ, негабарит собст."
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ТЛСЦ РУС",
+      "code": "tlsts_rus",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [],
+      "phones": [
+        "+7 915 404 75 66",
+        "+7 499 113 23 13"
+      ],
+      "emails": [
+        "run@tlscgroup.ru",
+        "info@tlscgroup.ru"
+      ],
+      "notes": [
+        "Море, авиа , жд"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ТЛЦ",
+      "code": "tlts",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Владислав"
+      ],
+      "phones": [
+        "+7 812 401 64 00 доб.449",
+        "+7 911 236 18 11"
+      ],
+      "emails": [
+        "v.amatov@t-lc.ru"
+      ],
+      "notes": [
+        "По России"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ТНК",
+      "code": "tnk",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Лилия"
+      ],
+      "phones": [
+        "+7 916 387 50 69",
+        "+7 495 269 04 77 доб.328"
+      ],
+      "emails": [
+        "chia@tnku.ru"
+      ],
+      "notes": [
+        "танк контейнеры"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ТОО Исткомтранс",
+      "code": "too_istkomtrans",
+      "modes": [
+        "container",
+        "sea",
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "ЖД"
+      ],
+      "contacts": [
+        "Ольга",
+        "Хилькевич Ольга"
+      ],
+      "phones": [
+        "+7 727 3555111 592 ,299",
+        "+7 727 3555222",
+        "+7 905 7569269",
+        "+7 727 3555111 доб. 592"
+      ],
+      "emails": [
+        "khilkevich@ect.kz"
+      ],
+      "notes": [
+        "Казахстану, Центральной Азии и СНГ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Транс портал терминал",
+      "code": "trans_portal_terminal",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Отдел продаж"
+      ],
+      "phones": [
+        "+7 966 445 52 44"
+      ],
+      "emails": [
+        "zapros@tpt28.ru"
+      ],
+      "notes": [
+        "Китай-Россия"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Трансимпериал",
+      "code": "transimperial",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Москва \nСПБ\nЕКБ\nКазань\nМинск\nБрест"
+      ],
+      "phones": [
+        "+7 495 640 40 75",
+        "+7 812 200 50 61",
+        "+7 343 310 01 80",
+        "+7 843 500 41 29",
+        "+375 (17) 336 20 00",
+        "+375(17)336 20 00 доб.1224"
+      ],
+      "emails": [
+        "info@transimperial.ru"
+      ],
+      "notes": [
+        "Авто негабарит"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Шелковый путь",
+      "code": "shelkovyy_put",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Татьяна Литченко"
+      ],
+      "phones": [
+        "79246714247"
+      ],
+      "emails": [
+        "t.litchenko@silkroadgroup.ru"
+      ],
+      "notes": [
+        "автодоставка сборных грузов из Китая.\nОтправка ЖД и морских контейнеров по запросу клиента"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Энрит",
+      "code": "enrit",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [],
+      "phones": [
+        "74954192499"
+      ],
+      "emails": [
+        "office@enrit.ru"
+      ],
+      "notes": [
+        "Зерновой трейдер"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Эшелон",
+      "code": "eshelon",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Матвеев Юрий Владимирович"
+      ],
+      "phones": [
+        "79242422008"
+      ],
+      "emails": [
+        "yu.matveev@eshelon-logistics.ru"
+      ],
+      "notes": [
+        "РФ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ЮГСИБТРАНС",
+      "code": "yugsibtrans",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Александр"
+      ],
+      "phones": [
+        "+7 963 502 25 00",
+        "+7 385 86 316 85"
+      ],
+      "emails": [
+        "y_as@ysibtrans.ru"
+      ],
+      "notes": [
+        "Китай, Монголия, СНГ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Aero",
+      "code": "aero",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [],
+      "phones": [
+        "74954459582"
+      ],
+      "emails": [
+        "sales@gsa.aero"
+      ],
+      "notes": [
+        "emirates flydubai"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Akkon Lines",
+      "code": "akkon_lines",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [],
+      "phones": [
+        "+90 216 520 3035"
+      ],
+      "emails": [],
+      "notes": [
+        "Новороссийск.\nЭксп. Турция,Африка.\nВост.Африка,сев.Африка"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Aly Logistics",
+      "code": "aly_logistics",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [],
+      "phones": [
+        "+90 531 632 72 21"
+      ],
+      "emails": [
+        "ugar.kilic@alylogistics.com"
+      ],
+      "notes": [
+        "Европа транзитные грузы | Все виды"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "AntGo Logistics",
+      "code": "antgo_logistics",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Володя"
+      ],
+      "phones": [
+        "79686467790"
+      ],
+      "emails": [
+        "volodya2025@internet.ru"
+      ],
+      "notes": [
+        "Отправить запрос         150-200 машин       через Монголию | Авиа,ЖД, Авто"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ANTU",
+      "code": "antu",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [],
+      "phones": [
+        "+86-421-3998399",
+        "+86-18342164567"
+      ],
+      "emails": [
+        "hf@cyantu.cn"
+      ],
+      "notes": [
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Ardeena group",
+      "code": "ardeena_group",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Аркадий"
+      ],
+      "phones": [
+        "998773705827"
+      ],
+      "emails": [
+        "egorov_arkadiy@ardena.uz"
+      ],
+      "notes": [
+        "Ташкент, Питер.Флагман Рига. собств. конт. и машины"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "aztransrail",
+      "code": "aztransrail",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [],
+      "phones": [
+        "(+994 50) 250 15 12",
+        "+994 50 252 09 92"
+      ],
+      "emails": [
+        "info@aztransrail.com",
+        "gubrat.gurbanov@aztransrail.com"
+      ],
+      "notes": [
+        "Азербайджан"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Baltic Land",
+      "code": "baltic_land",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import",
+        "international",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Китай",
+        "Море",
+        "ЖД",
+        "Авиа"
+      ],
+      "contacts": [
+        "Владимир Жалис"
+      ],
+      "phones": [
+        "+7 812 495 49 49 доб. 206",
+        "+7 931 307 34 58"
+      ],
+      "emails": [
+        "sales@balticland.ru"
+      ],
+      "notes": [
+        "Китай-РФ | ЖД, море, авиа",
+        "международная логистика"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Bars lojistik",
+      "code": "bars_lojistik",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Угур- владелец\nКамила -маркетинг\nЭмир-маркетинг"
+      ],
+      "phones": [
+        "+90 532 383 70 80",
+        "+90 532 456 44 34",
+        "+90 532 766 04 44"
+      ],
+      "emails": [
+        "ugur.deveci@barslojistik.com",
+        "marketing@barslojistik.com",
+        "emir.asilbas@barslojistik.com"
+      ],
+      "notes": [
+        "Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Bestglee",
+      "code": "bestglee",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Irene"
+      ],
+      "phones": [
+        "+86 18050053138 wechat"
+      ],
+      "emails": [
+        "info@jjtrans.com.cn"
+      ],
+      "notes": [
+        "Китай ЖД"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "BFS Group",
+      "code": "bfs_group",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Тина Ли"
+      ],
+      "phones": [
+        "+86 13128878652 м.",
+        "+86 075525123515"
+      ],
+      "emails": [
+        "sales6@bfs-logistics.cn"
+      ],
+      "notes": [
+        "Экспед."
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Boreas",
+      "code": "boreas",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [],
+      "phones": [
+        "+90 216 469 00 61"
+      ],
+      "emails": [
+        "info@boreashloballojistik.com"
+      ],
+      "notes": [
+        "Основные направления:Турция-РФ,КЗ,УЗ,СНГ\nЕвропа-Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "BQB Express",
+      "code": "bqb_express",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [
+        "Сергей Бурдаков"
+      ],
+      "phones": [
+        "+79688889774",
+        "+79165335610"
+      ],
+      "emails": [
+        "s.burdakov@bqb.ru.com"
+      ],
+      "notes": [
+        "Весь мир"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Bult gulf",
+      "code": "bult_gulf",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [],
+      "phones": [],
+      "emails": [
+        "sales@bgs.pro",
+        "info@c-shipping.ru",
+        "agency@transexim.ru"
+      ],
+      "notes": [
+        "РФ- Китай, Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "BVT",
+      "code": "bvt",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [],
+      "phones": [
+        "+375 33 633 63 63"
+      ],
+      "emails": [
+        "zakaz@bvtby.com"
+      ],
+      "notes": [
+        "Брест"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "BYR Logistics",
+      "code": "byr_logistics",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "James Fan"
+      ],
+      "phones": [
+        "+86 13911015531",
+        "+86 13240757949 Wechat"
+      ],
+      "emails": [
+        "james.fan@yueruibj.com"
+      ],
+      "notes": [
+        "8000 $"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Cainiao",
+      "code": "cainiao",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import",
+        "international"
+      ],
+      "sheets": [
+        "Китай",
+        "Авиа"
+      ],
+      "contacts": [
+        "Иван Кустов"
+      ],
+      "phones": [
+        "+7 923 3186716"
+      ],
+      "emails": [
+        "ivan.kustov@cainiao.com"
+      ],
+      "notes": [
+        "Китай | ЖД, машина, авиа",
+        "Китай ЖД, машина, авиа"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "camgulum lojistik",
+      "code": "camgulum_lojistik",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "1,Kemal Can-Заместитель менеджера региона                        2. Мелих Чифчти мен. с наземными грузоперевоками"
+      ],
+      "phones": [
+        "+90 553 218 46 12 +90 552 839 34 74"
+      ],
+      "emails": [
+        "kemalcan@camgulum.com",
+        "melih.ciftci@camgulum.com"
+      ],
+      "notes": [
+        "собственн.  Стамбул,Иордания,СНГ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "CAPital",
+      "code": "capital",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Марина"
+      ],
+      "phones": [
+        "+90 541 256 96 76",
+        "+90 850 474 13 52"
+      ],
+      "emails": [
+        "sales@capitaltasimacilic.com.tr"
+      ],
+      "notes": [
+        "Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Cargo Line Smolenck",
+      "code": "cargo_line_smolenck",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Сергей Савицкий Логист"
+      ],
+      "phones": [
+        "+79203032555 +375295522278"
+      ],
+      "emails": [
+        "savitskij.s@cargoline.su"
+      ],
+      "notes": [
+        "Авто+Рефы"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Certal",
+      "code": "certal",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Олег"
+      ],
+      "phones": [
+        "+7 812 424 16 15 доб.1403",
+        "+7 918 040 05 67"
+      ],
+      "emails": [
+        "zagrebelny.o@certapro.ru"
+      ],
+      "notes": [
+        "Шанхай и Оар, 2200 $ жд 260 тр"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "China-Sky",
+      "code": "china_sky",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Stella"
+      ],
+      "phones": [
+        "8618504280482"
+      ],
+      "emails": [],
+      "notes": [
+        "Прямые | Рф, СНГ,Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Cianlao",
+      "code": "cianlao",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Иван"
+      ],
+      "phones": [
+        "+7 923 318 67 16"
+      ],
+      "emails": [
+        "ivan.kustov@cianiao.com"
+      ],
+      "notes": [
+        "Китай Жд Авиа Авто"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Containertime",
+      "code": "containertime",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Отдел продаж"
+      ],
+      "phones": [
+        "+7 812 324-46-36"
+      ],
+      "emails": [
+        "sales@containertime.org"
+      ],
+      "notes": [
+        "Аренда контейнеров, проадажа хранение"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Cosmos Logistics",
+      "code": "cosmos_logistics",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Максим"
+      ],
+      "phones": [
+        "+8613345937517",
+        "+79362966066"
+      ],
+      "emails": [
+        "info@cosmos-trans.ru"
+      ],
+      "notes": [
+        "Китай.Собств."
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "CR FREIGHT",
+      "code": "cr_freight",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Lancy Rao"
+      ],
+      "phones": [
+        "+86 189 7477 1056"
+      ],
+      "emails": [
+        "lancy@crfreight.cn"
+      ],
+      "notes": [
+        "Cобств.авто"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "DMTrans",
+      "code": "dmtrans",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [
+        "Jason Yang"
+      ],
+      "phones": [
+        "+86-18718792442 вичат",
+        "+86-755-22960261"
+      ],
+      "emails": [
+        "szsales06@dmtrans.cn"
+      ],
+      "notes": [
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "EPSCM",
+      "code": "epscm",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import",
+        "international",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Китай",
+        "Море",
+        "ЖД",
+        "Авиа"
+      ],
+      "contacts": [
+        "Яна",
+        "Jasmine",
+        "Claude"
+      ],
+      "phones": [
+        "8618523532087",
+        "+86 13983969573",
+        "+86 18623001515"
+      ],
+      "emails": [
+        "yana@enpower-scm.com",
+        "jasmine_wang@enpower-scm.com",
+        "claude_xu@enpower-scm.com"
+      ],
+      "notes": [
+        "Море авиа",
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Ety",
+      "code": "ety",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [
+        "Клара \nАлександр"
+      ],
+      "phones": [
+        "+86 17521208350",
+        "+86 18613025700"
+      ],
+      "emails": [
+        "sales@cnetytrans.com",
+        "kaztranslogistic@163.com"
+      ],
+      "notes": [
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Fly Way",
+      "code": "fly_way",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Ольга"
+      ],
+      "phones": [
+        "+7 965 333 73 97"
+      ],
+      "emails": [
+        "o.osipova@flyway-cargo.com"
+      ],
+      "notes": [
+        "Cобственные кбк,Терминалы, собств. контейнеровоз"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "G.H. Forwarding",
+      "code": "g_h_forwarding",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "1. Анжела\n2.Куроки\n3.Вики\n4.Вивиан , Мск\n5. Лиза\n6. Ann \n7. Светлана общий\n8. Пиддин ЖД"
+      ],
+      "phones": [
+        "1. +8615057475059",
+        "2.+8613917133480",
+        "3.+8618620567212",
+        "4.+8618667858880",
+        "5.+8618561718747",
+        "6.m/wechat +86 13967884755",
+        "7.+86 18621775481",
+        "8.+86 15558206573"
+      ],
+      "emails": [
+        "fangbu@nbguohua.com.cn",
+        "cfangbs@nbguohua.com.cn",
+        "svetlana@nbguohua.com.cn",
+        "op68@nbguohua.com.cn"
+      ],
+      "notes": [
+        "Все виды перевозок | Все виды перевозок"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Global service",
+      "code": "global_service",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import",
+        "international",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Китай",
+        "ЖД"
+      ],
+      "contacts": [
+        "Чжан Лин"
+      ],
+      "phones": [
+        "+86 13065002506",
+        "+86 0531 88026893"
+      ],
+      "emails": [
+        "sophia@gaosheng56.com"
+      ],
+      "notes": [
+        "Свои машин.Ташкент Китай СНГ ЖД"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "grada",
+      "code": "grada",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Наталья"
+      ],
+      "phones": [
+        "+375 17 306 08 44",
+        "+375 29 666 38 73"
+      ],
+      "emails": [
+        "charnel@gradalogistic.by"
+      ],
+      "notes": [
+        "Белорусь"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Grail",
+      "code": "grail",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Фролов Вечеслав"
+      ],
+      "phones": [
+        "79151402363"
+      ],
+      "emails": [
+        "viacheslav@grail-logistics.com"
+      ],
+      "notes": [
+        "Китай-РФ-КЗ (ЖД)\nКитай-РФ-центр.Азия(авто)"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "GREEN AVIA",
+      "code": "green_avia",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [
+        "1.Николай ( рук. по авто перев.)"
+      ],
+      "phones": [
+        "1.+79266341115",
+        "+74957996115",
+        "+79256521115"
+      ],
+      "emails": [
+        "info@avia-dostavka.com"
+      ],
+      "notes": [
+        "международная логистика"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "IFF",
+      "code": "iff",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Lale"
+      ],
+      "phones": [
+        "+90 212 400 13 13",
+        "+90 537 951 29 40"
+      ],
+      "emails": [
+        "lalejafarzade@ifforwarding.com"
+      ],
+      "notes": [
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Jeet shah",
+      "code": "jeet_shah",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [],
+      "phones": [
+        "+91 22 61982800",
+        "+91 96644041116 m/",
+        "+91 98203 21484 wt"
+      ],
+      "emails": [
+        "anjan.banerji@sjl.co.in"
+      ],
+      "notes": [
+        "Индия"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Jetgo",
+      "code": "jetgo",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Helen Xie"
+      ],
+      "phones": [
+        "18129930399"
+      ],
+      "emails": [
+        "helen@jetgochina.com"
+      ],
+      "notes": [
+        "Авиа и море"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Juchehg. Цзючэн",
+      "code": "juchehg_tszyuchen",
+      "modes": [
+        "container",
+        "sea",
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "Авто собств."
+      ],
+      "contacts": [
+        "Линь"
+      ],
+      "phones": [
+        "13604705619",
+        "150 4806 2777",
+        "153 8970 2227"
+      ],
+      "emails": [
+        "info@bo-trans.com",
+        "532438034@qq.com"
+      ],
+      "notes": [
+        "Только авто. свой склад\nг. Маньчжурия"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Just",
+      "code": "just",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Хуан"
+      ],
+      "phones": [
+        "+86 135 8921 8542",
+        "+86 188 6167 3938"
+      ],
+      "emails": [
+        "huangyuqiang@jieyunstong.com"
+      ],
+      "notes": [],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Langtian",
+      "code": "langtian",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [
+        "Esther"
+      ],
+      "phones": [
+        "(+86)18317956521"
+      ],
+      "emails": [
+        "esther@ltscglobal.com"
+      ],
+      "notes": [
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Let Flexitank",
+      "code": "let_flexitank",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Настя"
+      ],
+      "phones": [
+        "+86 182 5326 1790"
+      ],
+      "emails": [
+        "nastia@letflexitank.com"
+      ],
+      "notes": [
+        "Флекситанк"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Letai-Trans",
+      "code": "letai_trans",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Тина"
+      ],
+      "phones": [
+        "м:139-2073-5260",
+        "теб:400-999-8585",
+        "+8515734875747"
+      ],
+      "emails": [
+        "letai124@mzlletai.com",
+        "letai6@mzlletai.com"
+      ],
+      "notes": [
+        "экспед. Китай, РФ. Свои склады. Через КЗ"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Mammoth trans",
+      "code": "mammoth_trans",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Дарья"
+      ],
+      "phones": [
+        "+86 131 3470 8248"
+      ],
+      "emails": [
+        "dasha@mammoth-trans.com"
+      ],
+      "notes": [
+        "Свои тс,боксы,тралы."
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Max Container",
+      "code": "max_container",
+      "modes": [
+        "container",
+        "sea",
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "Китай"
+      ],
+      "contacts": [
+        "Арина"
+      ],
+      "phones": [
+        "7 906 054 13 70"
+      ],
+      "emails": [
+        "muravievaas@max-cont.ru"
+      ],
+      "notes": [
+        "Хорошие ставки из Китая"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "MCA",
+      "code": "mca",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Короблева Олеся"
+      ],
+      "phones": [
+        "79528087182"
+      ],
+      "emails": [
+        "korobleva@mcalog.com"
+      ],
+      "notes": [
+        "Европа експ."
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Mer",
+      "code": "mer",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Ozben Taner"
+      ],
+      "phones": [
+        "m. +90 533 469 5894",
+        "ph. +90 2166391300"
+      ],
+      "emails": [
+        "ozbentaner@mershipping.com"
+      ],
+      "notes": [
+        "Прислать письмо Йоханенсбург\nагент аирлайн , морс,авиа,сухоп."
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Midas",
+      "code": "midas",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Сергей"
+      ],
+      "phones": [
+        "+7 812 401 63 38",
+        "+7 981 916 68 25"
+      ],
+      "emails": [
+        "nefedov@midas-spb.ru"
+      ],
+      "notes": [
+        "По России"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Mira Ekspres",
+      "code": "mira_ekspres",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [],
+      "phones": [
+        "+90 544 238 75 05",
+        "+90 212 778 11 28",
+        "+90 212 778 11 29"
+      ],
+      "emails": [
+        "seyit@mira14lojistik.com",
+        "info@miraekspres.com"
+      ],
+      "notes": [
+        "Турцию, Украину, Россию, Беларусь, Молдову, Казахстан и Киргизию"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "NECO LINE",
+      "code": "neco_line",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Анастасия"
+      ],
+      "phones": [
+        "79118951650"
+      ],
+      "emails": [
+        "sam@necoline.net"
+      ],
+      "notes": [
+        "Море Азия – Дальний Восток. На Сахалин не идут"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "NEP Экспресс",
+      "code": "nep_ekspress",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Андрей Исаев"
+      ],
+      "phones": [
+        "+ 7 977 802 36 15"
+      ],
+      "emails": [
+        "a.isaev@nep-logistiks.ru"
+      ],
+      "notes": [
+        "Авиа, море, прямое дж, сборка"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Ningbo",
+      "code": "ningbo",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Steven"
+      ],
+      "phones": [
+        "13567480302",
+        "tel:0574 56136483"
+      ],
+      "emails": [
+        "cs2-steven@nbsunkos.com"
+      ],
+      "notes": [
+        "Китай контейнеры"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Nova",
+      "code": "nova",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Цю Янань-рук.отд.продаж"
+      ],
+      "phones": [
+        "+7 933 358 27 41",
+        "+7 977 563 32 80"
+      ],
+      "emails": [
+        "qiuyanan@novascm.cn"
+      ],
+      "notes": [
+        "Авто Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Optimalog",
+      "code": "optimalog",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Ирина Шмакова"
+      ],
+      "phones": [
+        "+79688854921",
+        "+74991102424,доб 1273"
+      ],
+      "emails": [
+        "i.shmakova@optimalog.ru"
+      ],
+      "notes": [
+        "Эксп.\nминивен свои москва и обл."
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Orion express",
+      "code": "orion_express",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "1. Мария\n2.Юлия\n3.Светлана"
+      ],
+      "phones": [
+        "1.+79147180365",
+        "2.+79242496810",
+        "3.+79084490000"
+      ],
+      "emails": [
+        "m.remorenko@orion-log.ru",
+        "y.rasputnyaya@orion-log.ru",
+        "s.ivaschenko@orion-log.ru"
+      ],
+      "notes": [
+        "Свои авто\nмежд.из китая"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "R Group",
+      "code": "r_group",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container",
+        "road_train"
+      ],
+      "corridors": [
+        "cn_import",
+        "international",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Китай",
+        "Авто собств."
+      ],
+      "contacts": [
+        "Евгения"
+      ],
+      "phones": [
+        "t:+375175432930",
+        "m:+375297186873"
+      ],
+      "emails": [
+        "lyakhovets@rgroup-cargo.com"
+      ],
+      "notes": [
+        "Китай-РФ, СНГ,Европа"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Rail",
+      "code": "rail",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Юлия"
+      ],
+      "phones": [
+        "+86 156 2521 0617",
+        "+86 755 89328574"
+      ],
+      "emails": [
+        "yulia@inter-rail.cn"
+      ],
+      "notes": [
+        "машины по Китаю"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Rail Trust",
+      "code": "rail_trust",
+      "modes": [
+        "container",
+        "sea",
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "ЖД"
+      ],
+      "contacts": [
+        "Елена Заика",
+        "Елена"
+      ],
+      "phones": [
+        "7 423 2568568 (118) моб. 7 904 6212848",
+        "+7 423 2 568 568 доб.118",
+        "+7 904 621 2848"
+      ],
+      "emails": [
+        "mdir@railtrust.ru"
+      ],
+      "notes": [
+        "Азия, Вьетнам, Индия, Пакистан",
+        "Вся Азия, Вьетнам, Индия,Пакистан"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "RSN",
+      "code": "rsn",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import",
+        "international",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Китай",
+        "ЖД"
+      ],
+      "contacts": [
+        "Бобби Чжун"
+      ],
+      "phones": [
+        "+86 19861462900"
+      ],
+      "emails": [
+        "bobby.zhong@rsn-logistics.com"
+      ],
+      "notes": [
+        "международная логистика"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "RUDDER Global Logistics",
+      "code": "rudder_global_logistics",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Esma Karac"
+      ],
+      "phones": [
+        "+90 534 314 36 68"
+      ],
+      "emails": [
+        "esma@rudderlogistics-tr.com"
+      ],
+      "notes": [
+        "Контейнеры Море, Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Rudolf Riegler",
+      "code": "rudolf_riegler",
+      "modes": [
+        "container",
+        "sea",
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Контейнеры",
+        "Авто собств."
+      ],
+      "contacts": [
+        "Рачок Артур"
+      ],
+      "phones": [
+        "+375 44 724 2602"
+      ],
+      "emails": [
+        "a.rachok@rudolf.by"
+      ],
+      "notes": [
+        "собств.автопарк"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "S7 Cargo",
+      "code": "s7_cargo",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [],
+      "phones": [],
+      "emails": [
+        "cargo@s7.ru"
+      ],
+      "notes": [
+        "Авиа"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Shanganj mola supply",
+      "code": "shanganj_mola_supply",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Kira"
+      ],
+      "phones": [
+        "+86 150 9594 0573"
+      ],
+      "emails": [
+        "kira_wang@mola-mola.cn"
+      ],
+      "notes": [
+        "Китай-РФ,Европа,Кз,Уз."
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Shenzhen Chain Express",
+      "code": "shenzhen_chain_express",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [
+        "Mila"
+      ],
+      "phones": [
+        "+86-18824586706"
+      ],
+      "emails": [
+        "mila@chain-express.com"
+      ],
+      "notes": [
+        "Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "SHIPPING LINE",
+      "code": "shipping_line",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Алексей"
+      ],
+      "phones": [
+        "79219498560"
+      ],
+      "emails": [
+        "sales1@ags-shiping.ru"
+      ],
+      "notes": [
+        "Нидерланды"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Shyngar Trans",
+      "code": "shyngar_trans",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [
+        "Меруерт Исамидинова"
+      ],
+      "phones": [
+        "+7 701 999 3639",
+        "+7 705 278 9552",
+        "+7 701 769 52 35"
+      ],
+      "emails": [
+        "info@ogdh.kz"
+      ],
+      "notes": [
+        "ЖД Казахстан"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Silmar shipping",
+      "code": "silmar_shipping",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Николай"
+      ],
+      "phones": [
+        "+7 925 850 96 57",
+        "+7 495 374 85 06 доб. 822"
+      ],
+      "emails": [
+        "n.moturenko@silmar.ru"
+      ],
+      "notes": [
+        "Запрос из Африки в Мурманск. Индия, сауд.Аравия, ЮВА, экспорт отправить запросы"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "ST Group",
+      "code": "st_group",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [
+        "Дарья\nКристина"
+      ],
+      "phones": [
+        "+7 913 398 77 99",
+        "+7 913 428 28 77 поезд с Уфы",
+        "+7 913 710 99 55"
+      ],
+      "emails": [
+        "stgroup.ved@mail.ru",
+        "stgroup.kristinapetrukhina@mail.com"
+      ],
+      "notes": [
+        "Китай ЖД"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "SUNSHINE LOGISTICS",
+      "code": "sunshine_logistics",
+      "modes": [
+        "air"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Авиа"
+      ],
+      "contacts": [],
+      "phones": [
+        "Тел.:13877094863",
+        "Call: (+86)-755-82223424"
+      ],
+      "emails": [
+        "os4-10@sunshine-logistics.com"
+      ],
+      "notes": [
+        "Авиа Китай"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Sunstar trans",
+      "code": "sunstar_trans",
+      "modes": [
+        "rail"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "ЖД"
+      ],
+      "contacts": [
+        "Lucy"
+      ],
+      "phones": [
+        "0086-13828786992"
+      ],
+      "emails": [
+        "lucy@sunstar-trans.com"
+      ],
+      "notes": [],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Tels cargo",
+      "code": "tels_cargo",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Никита"
+      ],
+      "phones": [
+        "+375 17 311 08 44/3806",
+        "+375 29 552 65 56"
+      ],
+      "emails": [
+        "konyashkin@telscargo.com"
+      ],
+      "notes": [
+        "Европа Китай Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "TGE",
+      "code": "tge",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Сергей \nМаксим"
+      ],
+      "phones": [
+        "+79041472667",
+        "+79770896050"
+      ],
+      "emails": [
+        "transgruzevro75@gmail.com"
+      ],
+      "notes": [
+        "Китай, Монголия, Индия, Канада, США"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Trans Logex",
+      "code": "trans_logex",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Яссин Токсой"
+      ],
+      "phones": [
+        "+7 919 225 34 11",
+        "+7 499 301 04 40"
+      ],
+      "emails": [
+        "yasin.toksoy@capitaltasimaciluk.com.tr"
+      ],
+      "notes": [
+        "Россия"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "TRANSCONSULT",
+      "code": "transconsult",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "YURY \n\nЕкатерина Борсук"
+      ],
+      "phones": [
+        "+375 29 9546047",
+        "+375 162 505014",
+        "+375 29 7937938",
+        "+375 29 6693912"
+      ],
+      "emails": [
+        "y.kochurko@transconsult.by",
+        "borsuk@transconsult.by"
+      ],
+      "notes": [
+        "Авто ЖД море"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "TSC",
+      "code": "tsc",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Эрхан"
+      ],
+      "phones": [
+        "+90 549 457 64 45"
+      ],
+      "emails": [
+        "enci@tscferries.com"
+      ],
+      "notes": [
+        "РФ,Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "UNO",
+      "code": "uno",
+      "modes": [
+        "ftl_truck",
+        "road_train",
+        "ltl_groupage"
+      ],
+      "corridors": [
+        "international",
+        "cn_import",
+        "ru_domestic"
+      ],
+      "sheets": [
+        "Авто собств."
+      ],
+      "contacts": [
+        "Джем Донмез\nНаталья"
+      ],
+      "phones": [
+        "+90 530 521 65 05",
+        "+90 533 549 96 74",
+        "+7 905 671 0047"
+      ],
+      "emails": [
+        "cem@unotransport.com.tr",
+        "natalia@unotranssport.com.tr"
+      ],
+      "notes": [
+        "Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Veles forwarding",
+      "code": "veles_forwarding",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Дмитрий"
+      ],
+      "phones": [
+        "+7 8617 72-94-24доб.314",
+        "+7 918 021 70 53"
+      ],
+      "emails": [
+        "dchuprynin@velesforwarding.ru"
+      ],
+      "notes": [
+        "Отправить запрос Турция"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Widesafe",
+      "code": "widesafe",
+      "modes": [
+        "ltl_groupage",
+        "ftl_truck",
+        "rail",
+        "sea",
+        "air",
+        "container"
+      ],
+      "corridors": [
+        "cn_import"
+      ],
+      "sheets": [
+        "Китай"
+      ],
+      "contacts": [
+        "Harry"
+      ],
+      "phones": [
+        "+86-15191886297"
+      ],
+      "emails": [
+        "team105@widesafe.com"
+      ],
+      "notes": [
+        "ЖД, авиа"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "WTS",
+      "code": "wts",
+      "modes": [
+        "sea",
+        "container"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Море"
+      ],
+      "contacts": [
+        "Арина"
+      ],
+      "phones": [
+        "+7 906 054 13 70"
+      ],
+      "emails": [
+        "miravievaas@max-cont.ru"
+      ],
+      "notes": [
+        "море +жд"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Y&H CARGO",
+      "code": "y_h_cargo",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Rakesh Mishra"
+      ],
+      "phones": [
+        "+91-9810007332",
+        "+91-11-45450500",
+        "+91-11-45450501"
+      ],
+      "emails": [
+        "rakesh@yhcargo.in",
+        "info@yhcargo.in"
+      ],
+      "notes": [
+        "Индия"
+      ],
+      "source": "trans_russia_2026"
+    },
+    {
+      "name": "Yahua",
+      "code": "yahua",
+      "modes": [
+        "container",
+        "sea"
+      ],
+      "corridors": [
+        "international",
+        "cn_import"
+      ],
+      "sheets": [
+        "Контейнеры"
+      ],
+      "contacts": [
+        "Alml"
+      ],
+      "phones": [
+        "+86 186 7896 6236"
+      ],
+      "emails": [
+        "alml@qdbest.cn"
+      ],
+      "notes": [
+        "Аренда контейнеров,"
+      ],
+      "source": "trans_russia_2026"
+    }
+  ]
+}

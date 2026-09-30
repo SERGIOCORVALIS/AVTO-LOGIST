@@ -1,0 +1,12 @@
+{
+  "name": "competitor_pek_continue",
+  "description": "ПЭК is a competitor/benchmark — do not book through them, keep the deal on our modes",
+  "input": {
+    "text": "Отправьте коробки из Москвы в Казань через ПЭК",
+    "chat_id": 1103
+  },
+  "expect": {
+    "has_replies": true,
+    "status_in": ["intake", "sizing", "quoting", "pricing"]
+  }
+}

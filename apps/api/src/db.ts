@@ -1,9 +1,18 @@
 import { Pool } from "pg";
 
+/** Rewrite localhost → 127.0.0.1 so Windows does not try ::1 first. */
+export function preferIpv4Loopback(url: string): string {
+  return url.replace(
+    new RegExp("(://|@)localhost(?=[:/?#]|$)", "g"),
+    (_m, prefix: string) => `${prefix}127.0.0.1`
+  );
+}
+
 export const pool = new Pool({
-  connectionString:
+  connectionString: preferIpv4Loopback(
     process.env.DATABASE_URL ||
-    "postgresql://alo:alo@localhost:5432/autologistics",
+      "postgresql://alo:alo@127.0.0.1:5432/autologistics"
+  ),
 });
 
 export async function withIdempotency<T>(

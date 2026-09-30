@@ -1,4 +1,4 @@
-"""Load official-ish legal snippets for DeepSeek RAG context."""
+"""Load official-ish legal snippets for GPT legal RAG context."""
 
 from __future__ import annotations
 

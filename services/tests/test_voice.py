@@ -1,4 +1,4 @@
-from common.db import normalize_phone, get_or_create_deal_by_phone
+from common.db import normalize_phone
 
 
 def test_normalize_phone_ru():

@@ -1,0 +1,15 @@
+{
+  "corridor": "cn_import",
+  "modes": ["air"],
+  "base_per_kg": 520,
+  "currency": "RUB",
+  "eta": [5, 9],
+  "fees": ["fuel 8%"],
+  "reliability": 0.76,
+  "contact_email": "",
+  "note": "Internal baseline until live RFQ/API",
+  "tiers": [
+    { "min_kg": 45, "per_kg": 480 },
+    { "min_kg": 100, "per_kg": 430 }
+  ]
+}

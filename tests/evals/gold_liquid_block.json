@@ -1,0 +1,13 @@
+{
+  "name": "liquid_bulk_block",
+  "description": "Hard-block liquid bulk / tanker cargo",
+  "input": {
+    "text": "Нужно отправить наливной груз цистерной из Красноярска в Новосибирск",
+    "chat_id": 1104
+  },
+  "expect": {
+    "has_replies": true,
+    "escalate": true,
+    "hard_block": true
+  }
+}

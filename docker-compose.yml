@@ -5,27 +5,18 @@
 #   docker compose --profile observability up -d
 #
 # Dev without containerized apps: use scripts/start.ps1 (infra only via infra/docker-compose.yml)
-#
-# Note: Linux (GitHub Actions) is case-sensitive — Compose needs lowercase `.env`.
-# If the repo has `.ENV`, CI copies it to `.env` before `docker compose config`.
 
 name: autologistics
 
 include:
   - path: infra/docker-compose.yml
 
-x-env-files: &env_files
-  - path: .env
-    required: false
-  - path: .ENV
-    required: false
-
 services:
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    env_file: *env_files
+    env_file: .env
     environment:
       DATABASE_URL: postgresql://alo:alo@postgres:5432/autologistics
       REDIS_URL: redis://redis:6379
@@ -47,7 +38,7 @@ services:
     build:
       context: .
       dockerfile: services/Dockerfile
-    env_file: *env_files
+    env_file: .env
     environment:
       DATABASE_URL: postgresql://alo:alo@postgres:5432/autologistics
       REDIS_URL: redis://redis:6379
@@ -66,7 +57,8 @@ services:
     build:
       context: .
       dockerfile: apps/workers-ts/Dockerfile
-    env_file: *env_files
+    # Scale: docker compose up -d --scale workers=3
+    env_file: .env
     environment:
       DATABASE_URL: postgresql://alo:alo@postgres:5432/autologistics
       REDIS_URL: redis://redis:6379
@@ -82,7 +74,7 @@ services:
     build:
       context: .
       dockerfile: apps/voice-gateway/Dockerfile
-    env_file: *env_files
+    env_file: .env
     ports:
       - "${VOICE_GATEWAY_PORT:-3010}:3010"
       - "${SIP_PORT:-5060}:5060/udp"
@@ -109,6 +101,17 @@ services:
         condition: service_started
     volumes:
       - ./packages/prompts:/app/packages/prompts:ro
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_started
     restart: unless-stopped
 
   # tg-gateway needs interactive session secrets; run via scripts/start locally by default.

@@ -1,6 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { pool } from "../db";
+import { DIRECTOR_ESCALATION_REASONS, requireDirector } from "../auth";
+import { logStaffEvent } from "../staffEvents";
 
 export function registerEscalationRoutes(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
@@ -83,6 +85,21 @@ export function registerEscalationRoutes(app: FastifyInstance) {
       const client = await pool.connect();
       try {
         await client.query("BEGIN");
+        const existing = await client.query(
+          `SELECT * FROM escalations WHERE id = $1`,
+          [req.params.id]
+        );
+        if (!existing.rows[0]) {
+          await client.query("ROLLBACK");
+          return reply.code(404).send({ error: "not_found" });
+        }
+        const reason = String(existing.rows[0].reason || "");
+        if (DIRECTOR_ESCALATION_REASONS.has(reason)) {
+          if (!requireDirector(req, reply)) {
+            await client.query("ROLLBACK");
+            return;
+          }
+        }
         const esc = await client.query(
           `UPDATE escalations SET status = $1, manager_note = $2, resolved_at = NOW()
            WHERE id = $3 RETURNING *`,
@@ -96,14 +113,30 @@ export function registerEscalationRoutes(app: FastifyInstance) {
         const deal = await client.query(`SELECT * FROM deals WHERE id = $1`, [
           dealId,
         ]);
-        const resume =
-          body.resume_status ||
-          deal.rows[0]?.previous_status ||
-          "negotiation";
+        const isRfqPreflight = reason === "rfq_preflight";
         if (body.decision === "approved") {
+          const resume =
+            body.resume_status ||
+            deal.rows[0]?.previous_status ||
+            (isRfqPreflight ? "quoting" : "negotiation");
           await client.query(
             `UPDATE deals SET status = $1, escalate = FALSE, updated_at = NOW() WHERE id = $2`,
             [resume, dealId]
+          );
+        } else if (isRfqPreflight) {
+          // Reject preflight = do not send RFQ; keep deal open.
+          await client.query(
+            `UPDATE deals SET escalate = FALSE, status = COALESCE(previous_status, 'quoting'),
+             updated_at = NOW() WHERE id = $1`,
+            [dealId]
+          );
+          await client.query(
+            `UPDATE deals SET metadata = COALESCE(metadata,'{}'::jsonb)
+               || jsonb_build_object('rfq_preflight',
+                    COALESCE(metadata->'rfq_preflight','{}'::jsonb)
+                    || jsonb_build_object('status','rejected'))
+             WHERE id = $1`,
+            [dealId]
           );
         } else {
           await client.query(
@@ -113,6 +146,30 @@ export function registerEscalationRoutes(app: FastifyInstance) {
           );
         }
         await client.query("COMMIT");
+        if (isRfqPreflight && body.decision === "approved") {
+          const orch = process.env.ORCHESTRATOR_URL || "http://localhost:8000";
+          try {
+            await fetch(`${orch.replace(/\/$/, "")}/deals/${dealId}/flush-rfq`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: "{}",
+            });
+          } catch {
+            /* flush best-effort; staff can retry */
+          }
+        }
+        if (req.staff?.id) {
+          await logStaffEvent({
+            req,
+            actor: req.staff,
+            action: "escalation_decide",
+            summary: `${req.staff.name || req.staff.email} ${
+              body.decision === "approved" ? "одобрил" : "отклонил"
+            } эскалацию ${reason} по сделке ${String(dealId).slice(0, 8)}`,
+            target_id: dealId,
+            meta: { escalation_id: req.params.id, decision: body.decision, reason },
+          });
+        }
         return { escalation: esc.rows[0], decision: body.decision };
       } catch (e) {
         await client.query("ROLLBACK");

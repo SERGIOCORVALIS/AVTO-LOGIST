@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { pool } from "../db";
 import { DEFAULT_POLICY } from "@alo/shared";
+import { requireDirector } from "../auth";
 
 export function registerPolicyRoutes(app: FastifyInstance) {
   app.get("/policy", async () => {
@@ -13,7 +14,8 @@ export function registerPolicyRoutes(app: FastifyInstance) {
     return policy;
   });
 
-  app.put("/policy", async (req) => {
+  app.put("/policy", async (req, reply) => {
+    if (!requireDirector(req, reply)) return;
     const body = z.record(z.unknown()).parse(req.body);
     for (const [key, value] of Object.entries(body)) {
       await pool.query(

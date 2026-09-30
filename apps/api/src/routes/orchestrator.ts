@@ -8,11 +8,13 @@ export function registerOrchestratorProxy(app: FastifyInstance) {
         deal_id: z.string().uuid().optional(),
         channel: z.enum(["telegram", "voice", "email"]).optional().default("telegram"),
         chat_id: z.number().optional(),
+        message_id: z.number().optional(),
         external_id: z.string().optional(),
         call_session_id: z.string().uuid().optional(),
         user_id: z.number().optional(),
         text: z.string(),
         client_name: z.string().optional(),
+        client_email: z.string().email().optional(),
         idempotency_key: z.string(),
         full_quote: z.boolean().optional(),
       })

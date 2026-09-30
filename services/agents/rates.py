@@ -33,11 +33,27 @@ def allow_mock_rates() -> bool:
     env = os.getenv("ALLOW_MOCK_RATES")
     if env is not None and env != "":
         return env.lower() in ("1", "true", "yes", "on")
-    if os.getenv("ALO_ENV", "").lower() == "production":
+    return False
+
+
+def is_real_quote(quote: dict[str, Any] | None) -> bool:
+    if not quote or quote.get("error"):
         return False
-    if os.getenv("NODE_ENV", "").lower() == "production":
+    src = str(quote.get("source") or "")
+    partner = str(quote.get("partner") or "")
+    if src.startswith("api:") and ":error" in src:
         return False
-    return True
+    if partner in MOCK_RATES or src.startswith("api:demo") or "mock" in src.lower():
+        return False
+    if src.startswith("file:"):
+        env = os.getenv("ALLOW_FILE_TARIFFS")
+        if env is None or env.lower() not in ("1", "true", "yes", "on"):
+            return False
+    try:
+        price = float(quote.get("price_rub") or quote.get("price") or 0)
+    except (TypeError, ValueError):
+        return False
+    return 0 < price < 999999999
 
 
 def fetch_mock_quotes(
@@ -61,12 +77,19 @@ def compare_quotes(quotes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for q in quotes:
         if q.get("error") or float(q.get("price") or 0) >= 999999999:
             continue
-        price = float(q.get("price_rub") or q.get("price") or 1)
+        price = float(
+            q.get("effective_supplier_cost") or q.get("price_rub") or q.get("price") or 1
+        )
         eta = ((q.get("eta_days_min") or 14) + (q.get("eta_days_max") or 20)) / 2
+        rel = float(q.get("reliability_score") or 0.5)
+        safety = float(q.get("safety_score") or rel)
+        speed = 20 / max(eta, 1)
+        # Price is not the only criterion: term, reliability, safety.
         score = (
-            (1_000_000 / max(price, 1)) * 0.6
-            + (q.get("reliability_score") or 0.5) * 0.3
-            + (20 / max(eta, 1)) * 0.1
+            (1_000_000 / max(price, 1)) * 0.45
+            + rel * 0.25
+            + safety * 0.15
+            + speed * 0.15
         )
         ranked.append({**q, "score": round(score, 4), "total_landed": price})
     ranked.sort(key=lambda x: x["score"], reverse=True)
@@ -79,10 +102,14 @@ def negotiate_carrier(
     *,
     deal_id: str | None = None,
 ) -> dict[str, Any]:
-    """Request a better rate via partner email — does not invent a discount."""
+    """Request a better rate via supplier email — does not invent a discount."""
     improved = dict(quote)
     asked_price = round(float(quote.get("price") or 0) * (1 - aggression), 2)
-    contact = quote.get("contact_email") or os.getenv("PARTNER_NEGOTIATE_EMAIL")
+    contact = (
+        quote.get("contact_email")
+        or os.getenv("SUPPLIER_NEGOTIATE_EMAIL")
+        or os.getenv("PARTNER_NEGOTIATE_EMAIL")
+    )
     partner = quote.get("partner")
     if not contact and partner:
         try:

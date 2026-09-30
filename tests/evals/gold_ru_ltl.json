@@ -1,0 +1,13 @@
+{
+  "name": "ru_ltl_groupage",
+  "description": "Domestic Russia LTL groupage — logistics only, no customs",
+  "input": {
+    "text": "Нужна сборка тарно-штучного груза из Новосибирска в Москву, 800 кг",
+    "chat_id": 1101
+  },
+  "expect": {
+    "has_replies": true,
+    "status_in": ["intake", "sizing", "quoting", "pricing", "negotiation", "awaiting_manager"],
+    "no_invented_fixed_price_without_estimate_flag": true
+  }
+}

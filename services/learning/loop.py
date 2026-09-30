@@ -60,7 +60,7 @@ def select_playbook(policy: dict[str, Any]) -> dict[str, Any]:
 def merge_playbook_into_policy(
     policy: dict[str, Any], playbook: dict[str, Any]
 ) -> dict[str, Any]:
-    """Apply playbook body knobs onto pricing policy."""
+    """Apply playbook body knobs onto pricing + communication policy."""
     out = dict(policy or {})
     body = playbook.get("body") or {}
     if not isinstance(body, dict):
@@ -73,9 +73,18 @@ def merge_playbook_into_policy(
         "ops_fee_rub",
         "insurance_pct",
         "ask_max_questions",
+        "tone",
+        "comm_tone",
+        "always_ask_client",
+        "client_do_not_say",
+        "staff_coaching_rules",
+        "staff_coach_ttl_days",
     ):
         if key in body and body[key] is not None:
             out[key] = body[key]
+    # Alias tone → comm_tone for concierge
+    if body.get("tone") and not out.get("comm_tone"):
+        out["comm_tone"] = body["tone"]
     # canary margin boost proposals use relative pp
     if body.get("target_margin_delta_pp") is not None:
         out["target_margin_pct"] = float(out.get("target_margin_pct", 18)) + float(

@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { pool } from "../db";
+import { requireDirector } from "../auth";
 
 export function registerPlaybookRoutes(app: FastifyInstance) {
   app.get("/playbooks", async (req) => {
@@ -21,6 +22,7 @@ export function registerPlaybookRoutes(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
     "/playbooks/:id/decide",
     async (req, reply) => {
+      if (!requireDirector(req, reply)) return;
       const body = z
         .object({
           decision: z.enum(["canary", "active", "rejected", "retired"]),

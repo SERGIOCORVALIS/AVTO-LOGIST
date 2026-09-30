@@ -1,0 +1,20 @@
+{
+  "code": "dellin",
+  "corridor": "ru_domestic",
+  "modes": ["ltl", "groupage", "auto"],
+  "currency": "RUB",
+  "base_per_kg": 27,
+  "eta": [4, 9],
+  "reliability": 0.73,
+  "fees": ["insurance_optional"],
+  "contact_email": "",
+  "lanes": [
+    {"origin": "москва", "destination": "спб", "per_kg": 21, "eta": [2, 5]},
+    {"origin": "москва", "destination": "казань", "per_kg": 24, "eta": [3, 6]},
+    {"origin": "москва", "destination": "краснодар", "per_kg": 29, "eta": [5, 8]}
+  ],
+  "tiers": [
+    {"min_kg": 500, "per_kg": 23},
+    {"min_kg": 1000, "per_kg": 20}
+  ]
+}

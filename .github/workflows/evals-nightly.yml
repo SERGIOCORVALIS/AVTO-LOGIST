@@ -1,0 +1,68 @@
+name: evals-nightly
+
+on:
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+jobs:
+  golden-evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pnpm install
+      - run: pnpm --filter @alo/shared build
+      - run: pip install -e "services/[dev]"
+      - name: Start infra
+        run: docker compose -f infra/docker-compose.yml up -d postgres redis
+      - name: Wait for postgres
+        run: |
+          for i in $(seq 1 30); do
+            docker compose -f infra/docker-compose.yml exec -T postgres pg_isready -U alo -d autologistics && exit 0
+            sleep 2
+          done
+          exit 1
+      - name: Migrate
+        env:
+          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+        run: pnpm --filter @alo/api db:migrate
+      - name: Start orchestrator
+        env:
+          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: evals-jwt-secret-not-for-prod-32chars
+          INTERNAL_API_TOKEN: evals-internal-token-32charsxx
+          ALO_ENV: development
+          ALLOW_MOCK_RATES: "true"
+          ALLOW_FILE_TARIFFS: "true"
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          cd services && uvicorn orchestrator.app:app --host 127.0.0.1 --port 8000 &
+          for i in $(seq 1 45); do
+            curl -sf http://127.0.0.1:8000/health >/dev/null && exit 0
+            sleep 2
+          done
+          exit 1
+      - name: Run golden evals
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "OPENAI_API_KEY not set — running HTTP-only intake smoke"
+            node scripts/ci-e2e-rfq.mjs http://127.0.0.1:8000
+            exit 0
+          fi
+          cd services && python ../tests/evals/run_evals.py http://127.0.0.1:8000
+      - name: Teardown
+        if: always()
+        run: docker compose -f infra/docker-compose.yml down -v

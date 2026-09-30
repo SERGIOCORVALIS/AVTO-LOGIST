@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "competitor": "ПЭК",
+    "disclaimer_ru": "Это не постоянный тариф ПЭК и не оферта. Исторический ориентир рынка по сроку. Цифру клиенту берём со ставки поставщика (ПЭК может быть одним из них).",
+  "products": [
+    {
+      "id": "ltl_groupage",
+      "label_ru": "сборка",
+      "typical_sla_days": [2, 8],
+      "notes": "Тарно-штучный и сборный груз, терминал–терминал."
+    },
+    {
+      "id": "road_train",
+      "label_ru": "автопоезд / отдельная машина",
+      "typical_sla_days": [1, 6],
+      "notes": "Выделенный транспорт, когда сборка не подходит по объёму или сроку."
+    },
+    {
+      "id": "container",
+      "label_ru": "контейнеры",
+      "typical_sla_days": [5, 16],
+      "notes": "Контейнерные отправки по РФ и стыковка с ЖД/морем."
+    },
+    {
+      "id": "rail",
+      "label_ru": "ЖД",
+      "typical_sla_days": [7, 21],
+      "notes": "Железнодорожные схемы на дальние плечи."
+    },
+    {
+      "id": "air",
+      "label_ru": "авиа",
+      "typical_sla_days": [3, 10],
+      "notes": "Импорт из Китая авиа. Срок рынка, не оферта."
+    },
+    {
+      "id": "ftl_truck",
+      "label_ru": "фуры",
+      "typical_sla_days": [8, 18],
+      "notes": "Автофуры Китай–РФ. Ставка своих поставщиков."
+    }
+  ],
+  "lanes": [
+    {"origin": "Moscow", "destination": "Kazan", "mode": "ltl_groupage", "typical_sla_days": [1, 3]},
+    {"origin": "Moscow", "destination": "Saint Petersburg", "mode": "ltl_groupage", "typical_sla_days": [1, 2]},
+    {"origin": "Moscow", "destination": "Novosibirsk", "mode": "ltl_groupage", "typical_sla_days": [4, 8]},
+    {"origin": "Moscow", "destination": "Yekaterinburg", "mode": "ltl_groupage", "typical_sla_days": [3, 6]},
+    {"origin": "Novosibirsk", "destination": "Moscow", "mode": "ltl_groupage", "typical_sla_days": [4, 8]},
+    {"origin": "Moscow", "destination": "Kazan", "mode": "road_train", "typical_sla_days": [1, 2]},
+    {"origin": "Hangzhou", "destination": "Khimki", "mode": "ltl_groupage", "typical_sla_days": [18, 32]},
+    {"origin": "Hangzhou", "destination": "Khimki", "mode": "air", "typical_sla_days": [4, 9]},
+    {"origin": "Guangzhou", "destination": "Moscow", "mode": "ltl_groupage", "typical_sla_days": [18, 35]}
+  ]
+}

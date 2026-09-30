@@ -1,0 +1,93 @@
+{
+  "version": 2,
+  "incoterms_2020": ["EXW", "FCA", "FAS", "FOB", "CFR", "CIF", "CPT", "CIP", "DAP", "DPU", "DDP"],
+  "cargo_classes": [
+    { "id": "tare_piece", "label_ru": "тарно-штучный" },
+    { "id": "dimensional", "label_ru": "габаритный" },
+    { "id": "oversized", "label_ru": "негабаритный" },
+    { "id": "dangerous", "label_ru": "опасный" }
+  ],
+  "hard_stops": [
+    {
+      "id": "bulk_liquid",
+      "label_ru": "наливной",
+      "aliases": ["налив", "наливной", "цистерн", "liquid bulk", "bulk liquid", "tanker cargo"]
+    },
+    {
+      "id": "private_move",
+      "label_ru": "частный переезд"
+    },
+    {
+      "id": "sanctioned",
+      "label_ru": "санкционные товары"
+    }
+  ],
+  "groupage_suppliers": [
+    { "id": "pek", "label_ru": "ПЭК", "also_competitor": true },
+    { "id": "dellin", "label_ru": "Деловые Линии" },
+    { "id": "kit", "label_ru": "КИТ" },
+    { "id": "baikal", "label_ru": "Байкал-Сервис" },
+    { "id": "energia", "label_ru": "Энергия" },
+    { "id": "sherl", "label_ru": "Шерл" },
+    { "id": "azimut", "label_ru": "Азимут" },
+    { "id": "dalexpress", "label_ru": "Дальэкспресс" }
+  ],
+  "competitors": [
+    {
+      "id": "pek",
+      "label_ru": "ПЭК",
+      "role": "competitor_and_possible_supplier",
+      "aliases": ["пэк", "pek", "pecom", "pec"]
+    }
+  ],
+  "services": [
+    { "id": "logistics", "label_ru": "логистика" },
+    { "id": "buyout", "label_ru": "выкуп" },
+    { "id": "supplier_sourcing", "label_ru": "подбор поставщика" },
+    { "id": "customs_clearance", "label_ru": "растаможка" },
+    { "id": "certification", "label_ru": "сертификация" },
+    { "id": "insurance", "label_ru": "страхование груза" },
+    { "id": "night_express", "label_ru": "ночной экспресс" }
+  ],
+  "corridors": {
+    "ru_domestic": {
+      "label_ru": "Перевозки по России",
+      "services": ["logistics", "insurance", "night_express"],
+      "modes": [
+        { "id": "ltl_groupage", "label_ru": "сборка", "volumetric_divisor": 5000 },
+        { "id": "road_train", "label_ru": "фуры", "volumetric_divisor": 4000 },
+        { "id": "container", "label_ru": "контейнеры", "volumetric_divisor": 1000 },
+        { "id": "rail", "label_ru": "ЖД", "volumetric_divisor": 1000 }
+      ]
+    },
+    "cn_import": {
+      "label_ru": "Импорт из Китая",
+      "services": [
+        "logistics",
+        "buyout",
+        "supplier_sourcing",
+        "customs_clearance",
+        "certification",
+        "insurance"
+      ],
+      "modes": [
+        { "id": "ltl_groupage", "label_ru": "сборка", "volumetric_divisor": 5000 },
+        { "id": "air", "label_ru": "авиа", "volumetric_divisor": 6000 },
+        { "id": "container", "label_ru": "контейнеры", "volumetric_divisor": 1000 },
+        { "id": "ftl_truck", "label_ru": "фуры", "volumetric_divisor": 4000 }
+      ]
+    },
+    "international": {
+      "label_ru": "Международная перевозка (не только Китай→РФ)",
+      "services": ["logistics", "customs_clearance", "certification", "insurance"],
+      "modes": [
+        { "id": "ltl_groupage", "label_ru": "сборка", "volumetric_divisor": 5000 },
+        { "id": "air", "label_ru": "авиа", "volumetric_divisor": 6000 },
+        { "id": "container", "label_ru": "контейнеры", "volumetric_divisor": 1000 },
+        { "id": "ftl_truck", "label_ru": "фуры", "volumetric_divisor": 4000 },
+        { "id": "rail", "label_ru": "ЖД", "volumetric_divisor": 1000 },
+        { "id": "sea", "label_ru": "море", "volumetric_divisor": 1000 }
+      ]
+    }
+  }
+}

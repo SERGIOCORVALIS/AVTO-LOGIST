@@ -53,7 +53,7 @@ def load_secrets(dotenv_path: str | None = None) -> dict[str, str]:
 
         path = Path(dotenv_path) if dotenv_path else root / ".env"
         if path.exists():
-            load_dotenv(path, override=False)
+            load_dotenv(path, override=True)
             loaded["__dotenv__"] = str(path)
     except Exception:
         pass

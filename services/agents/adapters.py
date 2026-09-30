@@ -1,4 +1,8 @@
-"""Logistics partner API adapters (HTTP, CDEK, JSON tariffs + optional mock)."""
+"""Supplier rate adapters (HTTP, JSON tariffs + optional mock).
+
+Groupage players (ПЭК, Деловые Линии, Байкал-Сервис) may be suppliers.
+CDEK / Keycloak login URLs are not quote APIs.
+"""
 
 from __future__ import annotations
 
@@ -8,25 +12,63 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Protocol
 
-import httpx
-
 from agents.rates import MOCK_RATES
+from agents.restrictions import NOT_SUPPLIERS
 
 
 class QuoteAdapter(Protocol):
     code: str
 
-    def quote(self, chargeable_kg: float, route_summary: str) -> dict[str, Any]: ...
+    def quote(
+        self,
+        chargeable_kg: float,
+        route_summary: str,
+        ctx: dict[str, Any] | None = None,
+    ) -> dict[str, Any]: ...
+
+
+_LOGIN_URL_HINTS = (
+    "/auth",
+    "/login",
+    "/signin",
+    "keycloak",
+    "/_dhl",
+    "/account",
+    "/cabinet",
+)
+
+
+def _is_quote_api_url(url: str) -> bool:
+    low = (url or "").lower()
+    if not low.startswith("http"):
+        return False
+    if any(h in low for h in _LOGIN_URL_HINTS):
+        return False
+    return (
+        "/quote" in low
+        or "/api" in low
+        or "/v1/" in low
+        or "/v2/" in low
+        or "/lk/calc/fit" in low
+        or "/offers/fit" in low
+    )
 
 
 def _allow_mock_rates() -> bool:
-    env = os.getenv("ALLOW_MOCK_RATES")
-    if env is not None and env != "":
-        return env.lower() in ("1", "true", "yes", "on")
-    # Production defaults to false
-    if os.getenv("ALO_ENV", "").lower() == "production":
+    from agents.rates import allow_mock_rates
+
+    return allow_mock_rates()
+
+
+def _tariff_matches(cfg: dict[str, Any], ctx: dict[str, Any] | None) -> bool:
+    if not ctx:
+        return True
+    corridor = cfg.get("corridor")
+    if corridor and ctx.get("corridor") and corridor != ctx.get("corridor"):
         return False
-    if os.getenv("NODE_ENV", "").lower() == "production":
+    modes = cfg.get("modes") or []
+    mode = ctx.get("transport_mode")
+    if modes and mode and mode not in modes:
         return False
     return True
 
@@ -35,7 +77,12 @@ class MockPartnerAdapter:
     def __init__(self, code: str):
         self.code = code
 
-    def quote(self, chargeable_kg: float, route_summary: str) -> dict[str, Any]:
+    def quote(
+        self,
+        chargeable_kg: float,
+        route_summary: str,
+        ctx: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         cfg = MOCK_RATES[self.code]
         price = round(cfg["base_per_kg"] * max(chargeable_kg, 1), 2)
         if chargeable_kg > 100:
@@ -60,17 +107,27 @@ class HttpPartnerAdapter:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
 
-    def quote(self, chargeable_kg: float, route_summary: str) -> dict[str, Any]:
+    def quote(
+        self,
+        chargeable_kg: float,
+        route_summary: str,
+        ctx: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         headers = {}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
+        params: dict[str, Any] = {"kg": chargeable_kg, "route": route_summary}
+        if ctx:
+            for key in ("corridor", "transport_mode", "cargo_class", "incoterms"):
+                if ctx.get(key):
+                    params[key] = ctx[key]
         try:
-            r = httpx.get(
-                f"{self.base_url}/quote",
-                params={"kg": chargeable_kg, "route": route_summary},
-                headers=headers,
-                timeout=12.0,
-            )
+            from common.http_client import partner_get
+
+            url = self.base_url
+            if not url.lower().rstrip("/").endswith("/quote"):
+                url = f"{self.base_url}/quote"
+            r = partner_get(url, params=params, headers=headers)
             r.raise_for_status()
             data = r.json()
             return {
@@ -93,15 +150,25 @@ class HttpPartnerAdapter:
 
 
 class JsonTariffFileAdapter:
-    """Local partner tariff JSON: {base_per_kg, eta:[min,max], currency, fees, reliability}."""
+    """Local partner tariff JSON with optional corridor / modes filter."""
 
     def __init__(self, code: str, path: Path):
         self.code = code
         self.path = path
 
-    def quote(self, chargeable_kg: float, route_summary: str) -> dict[str, Any]:
+    def quote(
+        self,
+        chargeable_kg: float,
+        route_summary: str,
+        ctx: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         try:
             cfg = json.loads(self.path.read_text(encoding="utf-8"))
+            if not _tariff_matches(cfg, ctx):
+                return {
+                    **_error_quote(self.code, route_summary, RuntimeError("mode_mismatch")),
+                    "error": "mode_mismatch",
+                }
             per_kg = float(cfg.get("base_per_kg") or cfg.get("price_per_kg") or 0)
             price = round(per_kg * max(chargeable_kg, 1), 2)
             tiers = cfg.get("tiers") or []
@@ -125,72 +192,6 @@ class JsonTariffFileAdapter:
             }
         except Exception as e:
             return _error_quote(self.code, route_summary, e)
-
-
-class CdekPartnerAdapter:
-    """CDEK API v2 calculator (international / tariff list)."""
-
-    def __init__(self, account: str, secure: str, from_code: int = 44, to_code: int = 44):
-        self.code = "cdek"
-        self.account = account
-        self.secure = secure
-        self.from_code = int(os.getenv("PARTNER_CDEK_FROM_CODE", str(from_code)))
-        self.to_code = int(os.getenv("PARTNER_CDEK_TO_CODE", str(to_code)))
-        self.base = os.getenv("PARTNER_CDEK_BASE", "https://api.cdek.ru/v2").rstrip("/")
-
-    def _token(self) -> str:
-        r = httpx.post(
-            f"{self.base}/oauth/token",
-            data={
-                "grant_type": "client_credentials",
-                "client_id": self.account,
-                "client_secret": self.secure,
-            },
-            timeout=12.0,
-        )
-        r.raise_for_status()
-        return r.json()["access_token"]
-
-    def quote(self, chargeable_kg: float, route_summary: str) -> dict[str, Any]:
-        try:
-            token = self._token()
-            weight_g = int(max(chargeable_kg, 0.1) * 1000)
-            payload = {
-                "type": 1,
-                "from_location": {"code": self.from_code},
-                "to_location": {"code": self.to_code},
-                "packages": [{"weight": weight_g, "length": 20, "width": 15, "height": 10}],
-            }
-            r = httpx.post(
-                f"{self.base}/calculator/tarifflist",
-                headers={"Authorization": f"Bearer {token}"},
-                json=payload,
-                timeout=15.0,
-            )
-            r.raise_for_status()
-            data = r.json()
-            tariffs = data.get("tariff_codes") or data.get("tariffs") or []
-            if not tariffs:
-                raise RuntimeError("cdek_no_tariffs")
-            best = min(tariffs, key=lambda t: float(t.get("delivery_sum") or t.get("sum") or 1e12))
-            price = float(best.get("delivery_sum") or best.get("sum") or 0)
-            days_min = best.get("period_min") or best.get("calendar_min")
-            days_max = best.get("period_max") or best.get("calendar_max")
-            return {
-                "source": "api:cdek",
-                "partner": "cdek",
-                "route_summary": route_summary,
-                "price": price,
-                "currency": "RUB",
-                "eta_days_min": days_min,
-                "eta_days_max": days_max,
-                "hidden_fees": [],
-                "reliability_score": 0.75,
-                "valid_until": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat(),
-                "raw_http": best,
-            }
-        except Exception as e:
-            return _error_quote("cdek", route_summary, e)
 
 
 def _error_quote(code: str, route_summary: str, e: Exception) -> dict[str, Any]:
@@ -225,12 +226,18 @@ def _db_http_adapters() -> list[QuoteAdapter]:
                 """
             ).fetchall()
         for row in rows:
-            code = str(row["code"] or "partner")
+            code = str(row["code"] or "supplier")
+            if code.lower() in NOT_SUPPLIERS:
+                continue
             meta = row.get("metadata") or {}
             key = None
             if isinstance(meta, dict):
                 key = meta.get("api_key")
-            key = key or os.getenv(f"PARTNER_KEY_{code.upper()}")
+            key = (
+                key
+                or os.getenv(f"SUPPLIER_KEY_{code.upper()}")
+                or os.getenv(f"PARTNER_KEY_{code.upper()}")
+            )
             adapters.append(HttpPartnerAdapter(code, str(row["api_base_url"]), key))
     except Exception:
         pass
@@ -243,8 +250,10 @@ def _json_tariff_adapters() -> list[QuoteAdapter]:
         return []
     out: list[QuoteAdapter] = []
     for path in root.glob("*.json"):
-        # Skip templates: example_*.json / *.example.json
         if path.stem.startswith("example") or path.name.endswith(".example.json"):
+            continue
+        # PEK / ДЛ handled by carrier_adapters (lane-aware)
+        if path.stem.startswith("pek") or path.stem.startswith("dellin"):
             continue
         out.append(JsonTariffFileAdapter(path.stem, path))
     return out
@@ -252,17 +261,33 @@ def _json_tariff_adapters() -> list[QuoteAdapter]:
 
 def all_adapters() -> list[QuoteAdapter]:
     adapters: list[QuoteAdapter] = []
+    # CDEK is courier (not auto-RFQ). ПЭК/ДЛ/Байкал могут быть поставщиками сборки.
+    from agents.carrier_adapters import build_carrier_adapters
+    from agents.fesco_adapter import build_fesco_adapter
 
-    cdek_acc = os.getenv("PARTNER_CDEK_ACCOUNT") or ""
-    cdek_sec = os.getenv("PARTNER_CDEK_SECURE") or ""
-    if cdek_acc and cdek_sec:
-        adapters.append(CdekPartnerAdapter(cdek_acc, cdek_sec))
+    adapters.extend(build_carrier_adapters())
+    fesco = build_fesco_adapter()
+    if fesco:
+        adapters.append(fesco)
 
-    for code, url in os.environ.items():
-        if code.startswith("PARTNER_HTTP_") and url.startswith("http"):
-            partner_code = code.replace("PARTNER_HTTP_", "").lower()
-            key = os.getenv(f"PARTNER_KEY_{partner_code.upper()}")
-            adapters.append(HttpPartnerAdapter(partner_code, url, key))
+    for env_key, url in os.environ.items():
+        supplier_code = None
+        if env_key.startswith("SUPPLIER_HTTP_"):
+            supplier_code = env_key.replace("SUPPLIER_HTTP_", "").lower()
+        elif env_key.startswith("PARTNER_HTTP_"):
+            supplier_code = env_key.replace("PARTNER_HTTP_", "").lower()
+        if not supplier_code or not (url or "").startswith("http"):
+            continue
+        if supplier_code in NOT_SUPPLIERS:
+            continue
+        if supplier_code in ("pek", "dellin", "fesco"):
+            continue  # dedicated adapters
+        if not _is_quote_api_url(url):
+            continue
+        key = os.getenv(f"SUPPLIER_KEY_{supplier_code.upper()}") or os.getenv(
+            f"PARTNER_KEY_{supplier_code.upper()}"
+        )
+        adapters.append(HttpPartnerAdapter(supplier_code, url, key))
 
     adapters.extend(_db_http_adapters())
     adapters.extend(_json_tariff_adapters())

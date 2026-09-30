@@ -1,10 +1,16 @@
 /** Business-hours check for after-hours voice mode (Europe/Moscow by default). */
 
+function envFlag(name: string, fallback: boolean): boolean {
+  const v = process.env[name];
+  if (v === undefined || v === "") return fallback;
+  return ["1", "true", "yes", "on"].includes(v.toLowerCase());
+}
+
 export function isAfterHours(now = new Date()): boolean {
-  const tz = process.env.VOICE_TZ || "Europe/Moscow";
-  const start = Number(process.env.VOICE_HOURS_START || 9);
-  const end = Number(process.env.VOICE_HOURS_END || 19);
-  const skipWeekends = process.env.VOICE_SKIP_WEEKENDS !== "false";
+  const tz = process.env.VOICE_TZ || process.env.TG_TZ || "Europe/Moscow";
+  const start = Number(process.env.VOICE_HOURS_START || process.env.TG_WORK_HOURS_START || 9);
+  const end = Number(process.env.VOICE_HOURS_END || process.env.TG_WORK_HOURS_END || 19);
+  const skipWeekends = envFlag("VOICE_SKIP_WEEKENDS", false);
 
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: tz,

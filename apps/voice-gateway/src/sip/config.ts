@@ -20,6 +20,8 @@ export interface SipConfig {
   password: string;
   /** Outbound proxy host without sip: (Beeline regional proxy) */
   outboundProxy: string;
+  /** udp | tcp — Beeline Cloud PBX requires UDP 5060 */
+  transport: "udp" | "tcp";
   uriMode: SipUriMode;
   bindHost: string;
   port: number;
@@ -76,6 +78,8 @@ export function loadSipConfig(): SipConfig {
   const outboundProxy = stripSipPrefix(
     process.env.SIP_OUTBOUND_PROXY || preset.outboundProxy || ""
   );
+  const transportRaw = (process.env.SIP_TRANSPORT || "udp").trim().toLowerCase();
+  const transport: "udp" | "tcp" = transportRaw === "tcp" ? "tcp" : "udp";
 
   const authUsernameExplicit = process.env.SIP_AUTH_USERNAME || "";
   const authUsername =
@@ -104,6 +108,7 @@ export function loadSipConfig(): SipConfig {
       label: preset.label,
       domain,
       outboundProxy: outboundProxy || undefined,
+      transport,
       authUsername: authUsername ? "(set)" : undefined,
     });
   }
@@ -129,6 +134,7 @@ export function loadSipConfig(): SipConfig {
     authUsername,
     password,
     outboundProxy,
+    transport,
     uriMode,
     bindHost: process.env.SIP_BIND_HOST || "0.0.0.0",
     port: envInt("SIP_PORT", 5060),
