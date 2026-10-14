@@ -1,8 +1,8 @@
 # Architecture — AutoLogistics OS (TRANSINVEST AI-логист)
 
-Приоритет бизнес-правил: **ТЗ Александры** (`TRANSINVEST_AI_Logist_TZ_v1/`) > Академия логиста > старые эвристики.
+Приоритет бизнес-правил: **ТЗ ** (`TRANSINVEST_AI_Logist_TZ_v1/`) > Академия логиста > старые эвристики.
 
-Юрлицо в клиентских каналах: **ООО «ЖД Трансинвест»** (`packages/shared/src/company.ts`, `.env` `COMPANY_*`).
+Юрлицо в клиентских каналах: **ООО «XXXXXXXXXXX»** (`packages/shared/src/company.ts`, `.env` `COMPANY_*`).
 
 ## Contours
 
