@@ -97,27 +97,11 @@ jobs:
           JWT_SECRET: ci-smoke-jwt-secret-not-for-prod
           INTERNAL_API_TOKEN: ci-smoke-internal-token-32b
           CABINET_AUTH_REQUIRED: "true"
-        run: |
-          pnpm --filter @alo/api exec tsx -e "
-          import { loadRootEnv } from '@alo/shared';
-          loadRootEnv();
-          process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://alo:alo@localhost:5432/autologistics';
-          process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
-          const { pool } = await import('./src/db.ts');
-          await pool.query('SELECT 1');
-          const IORedis = (await import('ioredis')).default;
-          const r = new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: 1, lazyConnect: true });
-          await r.connect();
-          const pong = await r.ping();
-          r.disconnect();
-          await pool.end();
-          if (pong !== 'PONG') throw new Error('redis ping failed');
-          console.log('api-deps-ok');
-          "
+        run: pnpm --filter @alo/api exec tsx src/ciDepsSmoke.ts
       - name: Pytest with DB
         working-directory: services
         env:
-          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+          DATABASE_URL: postgresql://alo:alo@127.0.0.1:5432/autologistics
           ALLOW_MOCK_RATES: "true"
           ALLOW_FILE_TARIFFS: "true"
         run: pytest tests/ -q
