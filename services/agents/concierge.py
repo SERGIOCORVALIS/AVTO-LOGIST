@@ -361,6 +361,7 @@ def run_concierge(
             "staff_instructions": _staff_instructions_for_deal(deal),
         },
         ensure_ascii=False,
+        default=str,
     )
 
     if not settings.openai_api_key:

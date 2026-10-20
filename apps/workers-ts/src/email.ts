@@ -389,12 +389,8 @@ export async function sendQuoteRequestEmail(data: QuoteEmailPayload) {
 
   const t = await transporter();
   if (!t) {
-    const requireSmtp =
-      process.env.MAIL_REQUIRE_SMTP === "true" ||
-      process.env.NODE_ENV === "production" ||
-      (process.env.MAIL_PROVIDER || "").toLowerCase() === "yandex";
     console.log(`[email:dev] to=${data.to}\nsubject=${subject}\n${body}`);
-    if (requireSmtp) {
+    if (mailRequiresSmtp()) {
       throw new Error("smtp_not_configured");
     }
     return { ok: true, mode: "dev" as const, gpt_draft: Boolean(drafted) };
@@ -528,6 +524,15 @@ export async function draftRfqBodyWithGpt(opts: {
   }
 }
 
+function mailRequiresSmtp(): boolean {
+  return (
+    process.env.MAIL_REQUIRE_SMTP === "true" ||
+    process.env.NODE_ENV === "production" ||
+    process.env.ALO_ENV === "production" ||
+    (process.env.MAIL_PROVIDER || "").toLowerCase() === "yandex"
+  );
+}
+
 export async function sendClientReplyEmail(opts: {
   to: string;
   subject: string;
@@ -539,6 +544,9 @@ export async function sendClientReplyEmail(opts: {
   const text = opts.body.trim();
   if (!t) {
     console.log(`[email:dev] client-reply to=${opts.to}\n${opts.subject}\n${text}`);
+    if (mailRequiresSmtp()) {
+      throw new Error("smtp_not_configured");
+    }
     return { ok: true, mode: "dev" };
   }
   const info = await t.tx.sendMail({

@@ -2,6 +2,7 @@
  * Run: pnpm --filter @alo/api test
  */
 import {
+  assertProductionReady,
   cabinetAuthRequired,
   hasFileTariffChannels,
   hasPartnerChannels,
@@ -75,10 +76,30 @@ function testFileTariffsPresent() {
   assert(hasPartnerChannels(), "partner channels via files");
 }
 
+function testProdRequiresOpenAi() {
+  restoreEnv();
+  process.env.ALO_ENV = "production";
+  process.env.JWT_SECRET = "x".repeat(32);
+  process.env.INTERNAL_API_TOKEN = "y".repeat(32);
+  process.env.ALLOW_MOCK_RATES = "false";
+  process.env.ALLOW_FILE_TARIFFS = "true";
+  process.env.CABINET_DIRECTOR_PASSWORD = "unique-prod-password-not-default";
+  delete process.env.OPENAI_API_KEY;
+  const log = { info: () => undefined, warn: () => undefined };
+  let threw = false;
+  try {
+    assertProductionReady(log);
+  } catch (e) {
+    threw = String(e).includes("OPENAI_API_KEY");
+  }
+  assert(threw, "prod must require OPENAI_API_KEY");
+}
+
 testResolveJwtDev();
 testResolveJwtProdFails();
 testCabinetAuthProdDefault();
 testCabinetAuthProdBlockOff();
 testFileTariffsPresent();
+testProdRequiresOpenAi();
 restoreEnv();
 console.log("bootGuard.test.ts: ok");
