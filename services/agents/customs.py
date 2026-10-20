@@ -131,6 +131,7 @@ def gpt_compute_customs(
                 "compute_duty_and_vat_yourself": True,
             },
             ensure_ascii=False,
+            default=str,
         )
         return chat_parsed(
             gpt_client(),

@@ -13,6 +13,14 @@ function getBot(): Bot | null {
   return bot;
 }
 
+function tgRequiresBot(): boolean {
+  return (
+    process.env.NODE_ENV === "production" ||
+    process.env.ALO_ENV === "production" ||
+    process.env.TG_REQUIRE_BOT === "true"
+  );
+}
+
 async function sendToChat(
   chatId: string,
   text: string,
@@ -23,6 +31,9 @@ async function sendToChat(
     console.log(
       `[tg-chat:dev] ${chatId}${messageThreadId ? ` topic=${messageThreadId}` : ""}\n${text}`
     );
+    if (tgRequiresBot()) {
+      throw new Error("tg_bot_token_not_configured");
+    }
     return;
   }
   const extra: { message_thread_id?: number } = {};

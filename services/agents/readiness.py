@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from agents.intake import intake_gaps, wants_quote_first
+from agents.intake import intake_gaps
 
 EXACT = "exact"
 PRELIMINARY = "preliminary"

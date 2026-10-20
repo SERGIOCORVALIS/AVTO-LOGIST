@@ -185,6 +185,12 @@ export function assertProductionReady(log: {
     );
   }
 
+  if (!(process.env.OPENAI_API_KEY || "").trim()) {
+    throw new Error(
+      "OPENAI_API_KEY is required in production (intake, legal/customs, concierge, contracts)"
+    );
+  }
+
   const directorPass = process.env.CABINET_DIRECTOR_PASSWORD || "";
   if (
     directorPass === "TransinvestDir!2026" ||

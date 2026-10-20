@@ -177,11 +177,13 @@ def validate_economics(
     if profit < float(cfg["min_gross_profit_rub"]):
         issues.append("profit_below_minimum")
         escalate = True
-    if corridor == DOMESTIC or not is_international(corridor):
-        if str(cfg.get("client_ru_sells_with_vat")) in ("True", "true", "1") or cfg.get(
-            "client_ru_sells_with_vat"
-        ):
-            pass
+    # RU domestic: policy requires selling to the client with VAT (annotation for KP/offer).
+    vat_mode = client_price_vat_mode(corridor)
+    sells_with_vat = bool(cfg.get("client_ru_sells_with_vat"))
+    if (corridor == DOMESTIC or not is_international(corridor)) and sells_with_vat:
+        if vat_mode != VAT_INCLUDED:
+            issues.append("client_price_missing_vat")
+            escalate = True
     cashflow = assess_cashflow(
         offer_price,
         client_prepay_pct=client_prepay_pct,
@@ -197,6 +199,7 @@ def validate_economics(
         "issues": issues,
         "needs_human": escalate,
         "cashflow": cashflow,
+        "client_price_vat_mode": vat_mode,
         "ok": not escalate,
     }
 

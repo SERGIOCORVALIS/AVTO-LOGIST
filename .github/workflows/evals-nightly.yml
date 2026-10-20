@@ -34,12 +34,13 @@ jobs:
           exit 1
       - name: Migrate
         env:
-          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
+          # Must win over any checked-out local .env (loadRootEnv does not override).
+          DATABASE_URL: postgresql://alo:alo@127.0.0.1:5432/autologistics
         run: pnpm --filter @alo/api db:migrate
       - name: Start orchestrator
         env:
-          DATABASE_URL: postgresql://alo:alo@localhost:5432/autologistics
-          REDIS_URL: redis://localhost:6379
+          DATABASE_URL: postgresql://alo:alo@127.0.0.1:5432/autologistics
+          REDIS_URL: redis://127.0.0.1:6379
           JWT_SECRET: evals-jwt-secret-not-for-prod-32chars
           INTERNAL_API_TOKEN: evals-internal-token-32charsxx
           ALO_ENV: development
@@ -52,13 +53,15 @@ jobs:
             curl -sf http://127.0.0.1:8000/health >/dev/null && exit 0
             sleep 2
           done
+          echo "orchestrator failed to become healthy"
           exit 1
       - name: Run golden evals
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ORCHESTRATOR_URL: http://127.0.0.1:8000
         run: |
           if [ -z "$OPENAI_API_KEY" ]; then
-            echo "OPENAI_API_KEY not set — running HTTP-only intake smoke"
+            echo "::notice::OPENAI_API_KEY secret not configured — skipping LLM golden evals; running HTTP intake smoke only"
             node scripts/ci-e2e-rfq.mjs http://127.0.0.1:8000
             exit 0
           fi

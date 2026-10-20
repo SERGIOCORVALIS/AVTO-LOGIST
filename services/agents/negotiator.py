@@ -71,6 +71,7 @@ def negotiate_client_messages(
                         "top_quote": quotes_top[:1],
                     },
                     ensure_ascii=False,
+                    default=str,
                 ),
             )
             data = extract_json(raw)

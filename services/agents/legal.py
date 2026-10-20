@@ -190,6 +190,7 @@ def _gpt_legal(deal: dict[str, Any], cargo_est: dict[str, Any] | None) -> dict[s
             "compute_duty_and_vat_yourself": True,
         },
         ensure_ascii=False,
+        default=str,  # Decimal/UUID from Postgres must not crash GPT payload
     )
     last_err: Exception | None = None
     for _ in range(2):

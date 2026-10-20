@@ -180,7 +180,8 @@ async function playwrightSubmit(data: CabinetRfqPayload) {
   try {
     pw = await import("playwright");
   } catch {
-    return { ok: true, mode: "playwright_missing" as const, code };
+    // Not a successful RFQ — caller must fall back to email/API.
+    return { ok: false, mode: "playwright_missing" as const, code };
   }
   if (!url.startsWith("http")) {
     return { ok: false, mode: "no_url" as const, code };
@@ -248,7 +249,8 @@ export async function submitCabinetRfq(data: CabinetRfqPayload) {
     console.log(
       `[cabinet] skipped code=${code} deal=${data.deal_id || ""} (set CABINET_RFQ_ENABLED or CABINET_PLAYWRIGHT)`
     );
-    return { ok: true, mode: "skipped_disabled" as const, code };
+    // Disabled is not a successful send — pipeline should use email/API fallback.
+    return { ok: false, mode: "skipped_disabled" as const, code };
   }
 
   console.log(
@@ -264,7 +266,7 @@ export async function submitCabinetRfq(data: CabinetRfqPayload) {
         "[cabinet] playwright failed",
         e instanceof Error ? e.message : e
       );
-      return { ok: true, mode: "playwright_error" as const, code, task };
+      return { ok: false, mode: "playwright_error" as const, code, task };
     }
   }
 

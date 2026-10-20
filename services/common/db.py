@@ -11,6 +11,11 @@ from psycopg.rows import dict_row
 from common import prefer_ipv4_loopback, settings
 
 
+def _dumps(obj: Any) -> str:
+    """JSON for jsonb columns — Decimal/UUID/datetime from PG must not crash."""
+    return json.dumps(obj, default=str, ensure_ascii=False)
+
+
 def normalize_phone(phone: str) -> str:
     """Normalize to E.164 (+digits)."""
     raw = (phone or "").strip()
@@ -214,7 +219,7 @@ def set_active_deal(
             WHERE id = %s::uuid
             RETURNING *
             """,
-            (json.dumps(meta, default=str), deal_id),
+            (_dumps(meta), deal_id),
         )
         updated = cur.fetchone()
         if cid:
@@ -323,7 +328,7 @@ def create_fresh_deal(
                 (
                     client_name,
                     resolved_id,
-                    json.dumps({"client_email": client_email} if client_email else {}),
+                    _dumps({"client_email": client_email} if client_email else {}),
                 ),
             )
             return cur.fetchone()
@@ -359,7 +364,7 @@ def create_call_session(
               (deal_id, provider_call_id, phone, direction, status, metadata)
             VALUES (%s, %s, %s, %s, 'ringing', %s::jsonb) RETURNING *
             """,
-            (deal_id, provider_call_id, normalized, direction, json.dumps(metadata if metadata else {}), ) if metadata else (deal_id, provider_call_id, normalized, direction, '{}',), 
+            (deal_id, provider_call_id, normalized, direction, _dumps(metadata if metadata else {}), ) if metadata else (deal_id, provider_call_id, normalized, direction, '{}',), 
         )
         return cur.fetchone()
 
@@ -371,7 +376,7 @@ def update_call_session(session_id: str, **fields: Any) -> dict[str, Any]:
     for k, v in fields.items():
         if k in json_keys:
             sets.append(f"{k} = %s::jsonb")
-            vals.append(json.dumps(v, default=str))
+            vals.append(_dumps(v))
         else:
             sets.append(f"{k} = %s")
             vals.append(v)
@@ -411,7 +416,7 @@ def append_call_transcript(session_id: str, entry: dict[str, Any]) -> None:
             SET transcript = transcript || %s::jsonb
             WHERE id = %s
             """,
-            (json.dumps([entry]), session_id),
+            (_dumps([entry]), session_id),
         )
 
 
@@ -432,7 +437,7 @@ def update_deal(deal_id: str, **fields: Any) -> dict[str, Any]:
     for k, v in fields.items():
         if k in json_keys:
             sets.append(f"{k} = %s::jsonb")
-            vals.append(json.dumps(v, default=str))
+            vals.append(_dumps(v))
         else:
             sets.append(f"{k} = %s")
             vals.append(v)
@@ -491,7 +496,7 @@ def add_message(
                 direction,
                 sender,
                 text,
-                json.dumps(raw or {}),
+                _dumps(raw or {}),
             ),
         )
 
@@ -583,8 +588,8 @@ def create_escalation(
                 deal_id,
                 reason,
                 summary,
-                json.dumps(numbers or {}),
-                json.dumps(risks or []),
+                _dumps(numbers or {}),
+                _dumps(risks or []),
                 recommendation,
                 needed_decision,
             ),
@@ -652,10 +657,10 @@ def save_quote(deal_id: str, quote: dict[str, Any]) -> dict[str, Any]:
                 quote.get("currency", "RUB"),
                 quote.get("eta_days_min"),
                 quote.get("eta_days_max"),
-                json.dumps(quote.get("hidden_fees", [])),
+                _dumps(quote.get("hidden_fees", [])),
                 quote.get("reliability_score"),
                 quote.get("valid_until"),
-                json.dumps(quote),
+                _dumps(quote),
             ),
         )
         return cur.fetchone()
@@ -681,8 +686,8 @@ def save_cargo_estimate(deal_id: str, est: dict[str, Any]) -> dict[str, Any]:
                 est.get("source", "estimate"),
                 est.get("confidence", 0.5),
                 est.get("error_band_pct", 15),
-                json.dumps(est.get("calibration_applied", {})),
-                json.dumps(est.get("details", {})),
+                _dumps(est.get("calibration_applied", {})),
+                _dumps(est.get("details", {})),
             ),
         )
         return cur.fetchone()
@@ -713,8 +718,8 @@ def save_contract(deal_id: str, data: dict[str, Any]) -> dict[str, Any]:
                 deal_id,
                 data.get("contract_draft_md", ""),
                 data.get("client_risk_summary"),
-                json.dumps(data.get("risk_matrix", [])),
-                json.dumps(data),
+                _dumps(data.get("risk_matrix", [])),
+                _dumps(data),
                 data.get("must_approve", True),
             ),
         )
@@ -728,7 +733,7 @@ def log_learning(deal_id: str | None, event_type: str, payload: dict[str, Any]) 
             INSERT INTO learning_events (deal_id, event_type, payload)
             VALUES (%s,%s,%s::jsonb)
             """,
-            (deal_id, event_type, json.dumps(payload)),
+            (deal_id, event_type, _dumps(payload)),
         )
 
 
@@ -749,7 +754,7 @@ def idempotent_set(key: str, scope: str, result: Any, ttl_seconds: int = 3600) -
             VALUES (%s,%s,%s::jsonb, NOW() + (%s || ' seconds')::interval)
             ON CONFLICT (key) DO NOTHING
             """,
-            (key, scope, json.dumps(result), str(ttl_seconds)),
+            (key, scope, _dumps(result), str(ttl_seconds)),
         )
 
 
@@ -970,7 +975,7 @@ def create_calendar_event(
             VALUES (%s,%s,%s,%s,%s::jsonb)
             RETURNING *
             """,
-            (deal_id, kind, title, due_at, json.dumps(metadata or {})),
+            (deal_id, kind, title, due_at, _dumps(metadata or {})),
         )
         row = cur.fetchone()
     try:
@@ -1027,7 +1032,7 @@ def upsert_embedding(
             INSERT INTO embeddings (deal_id, kind, content, embedding, metadata)
             VALUES (%s,%s,%s,%s::vector,%s::jsonb)
             """,
-            (deal_id, kind, content, vec, json.dumps(metadata or {})),
+            (deal_id, kind, content, vec, _dumps(metadata or {})),
         )
 
 
@@ -1178,7 +1183,7 @@ def get_or_create_deal_by_email(
             (
                 client_name or (client or {}).get("name"),
                 client_id,
-                json.dumps({"client_email": email_norm}),
+                _dumps({"client_email": email_norm}),
             ),
         )
         deal = cur.fetchone()

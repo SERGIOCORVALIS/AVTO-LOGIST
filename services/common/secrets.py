@@ -47,13 +47,13 @@ def load_secrets(dotenv_path: str | None = None) -> dict[str, str]:
         except Exception:
             pass
 
-    # dotenv
+    # dotenv — only fill keys not already set (process env / Doppler win)
     try:
         from dotenv import load_dotenv
 
         path = Path(dotenv_path) if dotenv_path else root / ".env"
         if path.exists():
-            load_dotenv(path, override=True)
+            load_dotenv(path, override=False)
             loaded["__dotenv__"] = str(path)
     except Exception:
         pass

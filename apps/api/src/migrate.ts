@@ -5,6 +5,7 @@
  * Usage: pnpm --filter @alo/api db:migrate
  *
  * loadRootEnv must run before importing ./db (Pool reads DATABASE_URL at import time).
+ * Existing process.env (e.g. CI DATABASE_URL) wins over root .env by default.
  */
 import { loadRootEnv } from "@alo/shared";
 loadRootEnv();

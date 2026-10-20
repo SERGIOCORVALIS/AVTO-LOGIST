@@ -254,6 +254,7 @@ def test_min_profit_and_margin_path():
     eco = validate_economics(cost_total=100_000, offer_price=105_000, corridor="ru_domestic")
     assert eco["needs_human"] is True
     assert "margin_below_floor" in eco["issues"] or "profit_below_minimum" in eco["issues"]
+    assert eco["client_price_vat_mode"] == "included"
 
 
 def test_followup_default_and_urgent():

@@ -647,17 +647,12 @@ CREATE TABLE IF NOT EXISTS hs_broker_feedback (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Seed demo partners
-INSERT INTO partners (name, code, api_base_url, score) VALUES
-  ('Demo Express CN', 'demo_express', 'mock://demo-express', 0.7),
-  ('Silk Road Logistics', 'silk_road', 'mock://silk-road', 0.65),
-  ('EastGate Freight', 'eastgate', NULL, 0.55)
-ON CONFLICT (code) DO NOTHING;
-
--- Optional: approve contacts via PARTNER_QUOTE_EMAILS or Management Bot before first send.
--- Example seed (disabled by default — set emails in .env PARTNER_QUOTE_EMAILS instead):
+-- Do NOT seed mock:// demo partners here — fake quotes are only via ALLOW_MOCK_RATES
+-- (forbidden in production). Real partners come from seed_suppliers / association parsers /
+-- PARTNER_QUOTE_EMAILS / Management Bot.
+-- Optional contact seed example (disabled):
 -- INSERT INTO partner_contacts (partner_id, email, domain, verified, first_email_approved)
--- SELECT id, 'rates@example.com', 'example.com', TRUE, TRUE FROM partners WHERE code = 'demo_express'
+-- SELECT id, 'rates@example.com', 'example.com', TRUE, TRUE FROM partners WHERE code = 'pek'
 -- ON CONFLICT (email) DO NOTHING;
 INSERT INTO playbook_versions (name, version, body, status, canary_pct)
 VALUES (

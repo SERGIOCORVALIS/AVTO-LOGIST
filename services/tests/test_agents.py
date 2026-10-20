@@ -329,7 +329,7 @@ def test_cdek_adapter_not_registered(monkeypatch):
 
 
 def test_model_candidates_split_and_reasoning():
-    from common.llm import is_reasoning_model, model_candidates, model_for
+    from common.llm import is_reasoning_model, model_candidates
 
     assert model_candidates("gpt-5.6-sol,gpt-5.5,gpt-4o")[0] == "gpt-5.6-sol"
     assert "gpt-4o" in model_candidates("gpt-5.6-sol, gpt-4o")
