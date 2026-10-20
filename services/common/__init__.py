@@ -11,8 +11,8 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 try:
     from dotenv import load_dotenv
 
-    # Always load monorepo .env so ALL keys reach os.environ (not only Settings fields).
-    load_dotenv(_REPO_ROOT / ".env", override=True)
+    # Fill missing keys from monorepo .env; do NOT override CI/shell (same as dotenv default).
+    load_dotenv(_REPO_ROOT / ".env", override=False)
 except Exception:
     pass
 

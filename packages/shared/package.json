@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "tsx src/office.test.ts && tsx src/staffCopy.test.ts && tsx src/openai.test.ts && tsx src/mailRules.test.ts"
+    "test": "tsx src/office.test.ts && tsx src/staffCopy.test.ts && tsx src/openai.test.ts && tsx src/mailRules.test.ts && tsx src/loadRootEnv.test.ts"
   },
   "dependencies": {
     "mammoth": "^1.9.1",

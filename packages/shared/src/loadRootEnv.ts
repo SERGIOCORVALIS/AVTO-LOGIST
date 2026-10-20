@@ -47,6 +47,11 @@ function parseEnvFile(text: string): Record<string, string> {
   return out;
 }
 
+/**
+ * Load root `.env` into process.env.
+ * By default does NOT override keys already set (CI / shell win) — same as dotenv.
+ * Pass `{ override: true }` when the file must win over the current environment.
+ */
 export function loadRootEnv(opts?: { override?: boolean }): string {
   const fromEnv = (process.env.ALO_ROOT || "").trim();
   const start =
@@ -54,7 +59,7 @@ export function loadRootEnv(opts?: { override?: boolean }): string {
     (typeof __dirname !== "undefined" ? resolve(__dirname, "../../..") : process.cwd());
   const root = fromEnv ? resolve(fromEnv) : findRepoRoot(start);
   const envPath = resolve(root, ".env");
-  const override = opts?.override ?? true;
+  const override = opts?.override ?? false;
   if (existsSync(envPath)) {
     const parsed = parseEnvFile(readFileSync(envPath, "utf8"));
     for (const [k, v] of Object.entries(parsed)) {

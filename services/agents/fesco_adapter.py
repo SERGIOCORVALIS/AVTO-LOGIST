@@ -260,7 +260,6 @@ def _pick_wte(containers: list[dict[str, Any]], ctx: dict[str, Any] | None) -> d
         return None
     prefer = []
     cargo = str((ctx or {}).get("cargo_summary") or (ctx or {}).get("cargo_name") or "").lower()
-    mode = str((ctx or {}).get("transport_mode") or "").lower()
     if "40" in cargo or "40ft" in cargo or "40'" in cargo or "hc" in cargo:
         prefer.extend(["40", "hc", "hq"])
     elif "20" in cargo:

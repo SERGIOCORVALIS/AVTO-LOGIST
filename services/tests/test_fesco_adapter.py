@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 from agents.fesco_adapter import FescoFitAdapter, _match_location, _offer_total_rub
 
 
