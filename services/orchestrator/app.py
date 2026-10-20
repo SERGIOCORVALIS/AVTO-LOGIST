@@ -261,16 +261,16 @@ def _process_inner(req: ProcessRequest):
     if not client_email and req.channel == "email" and req.external_id and "@" in str(req.external_id):
         client_email = str(req.external_id).strip()
 
-    if req.deal_id:
-        pass
-    elif req.channel == "voice":
-        if not req.external_id:
-            return {"error": "external_id (phone) required for voice channel"}
-    elif req.channel == "email":
-        if not client_email and req.chat_id is None:
-            return {"error": "client_email (or external_id email) required for email channel"}
-    elif req.chat_id is None:
-        return {"error": "chat_id required for telegram channel"}
+    # Existing deal_id: skip channel identity checks (resume / staff flush).
+    if not req.deal_id:
+        if req.channel == "voice":
+            if not req.external_id:
+                return {"error": "external_id (phone) required for voice channel"}
+        elif req.channel == "email":
+            if not client_email and req.chat_id is None:
+                return {"error": "client_email (or external_id email) required for email channel"}
+        elif req.chat_id is None:
+            return {"error": "chat_id required for telegram channel"}
 
     log_info(
         "process_start",
